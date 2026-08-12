@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { X402PayButton } from "@/components/X402PayButton";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import type { Bulletin } from "@/lib/bulletins";
+
+const PAY_TO = "0x33661B8496075c3b8b2B69CB3E03BC3436808d78";
 
 export default function BulletinDetailPage() {
   const { locale, t } = useLanguage();
@@ -17,7 +20,7 @@ export default function BulletinDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
 
-  useEffect(() => {
+  function loadBulletin() {
     setLoading(true);
     setNotFound(false);
     setPaymentRequired(false);
@@ -30,6 +33,10 @@ export default function BulletinDetailPage() {
       .then((data) => {
         if (data) { setBulletin(data); setLoading(false); }
       });
+  }
+
+  useEffect(() => {
+    loadBulletin();
   }, [date, locale]);
 
   if (loading) {
@@ -45,25 +52,22 @@ export default function BulletinDetailPage() {
       <main style={{ background: "#f5f0e8", minHeight: "100vh", fontFamily: "'Georgia', serif", color: "#2a2010" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto", padding: "2rem 1.5rem" }}>
 
-          {/* Nav */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a", borderBottom: "0.5px solid #c8bfa8", paddingBottom: "8px", marginBottom: "14px" }}>
             <Link href="/" style={{ color: "#7a6f5a", textDecoration: "none" }}>{t("backToHome")}</Link>
             <LanguageSwitcher />
           </div>
 
-          {/* Masthead */}
           <div style={{ borderTop: "2.5px solid #1a1408", borderBottom: "2.5px solid #1a1408", padding: "6px 0", textAlign: "center", marginBottom: "8px" }}>
             <h1 style={{ fontFamily: "'Georgia', serif", fontSize: "36px", fontWeight: 900, color: "#1a1408", letterSpacing: "-0.5px", lineHeight: 1, margin: 0 }}>
               Base Daily Brief
             </h1>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", borderBottom: "0.5px solid #c8bfa8", paddingBottom: "6px", marginBottom: "40px", letterSpacing: "0.05em" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", borderBottom: "0.5px solid #c8bfa8", paddingBottom: "6px", marginBottom: "40px" }}>
             <span>{date}</span>
             <span>BASE ECOSYSTEM</span>
           </div>
 
-          {/* Paywall */}
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
             <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#8b6914", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "16px" }}>
               — {locale === "tr" ? "Bu içerik ücretlidir" : "This content requires payment"}
@@ -71,25 +75,21 @@ export default function BulletinDetailPage() {
             <h2 style={{ fontFamily: "'Georgia', serif", fontSize: "22px", fontWeight: 900, color: "#1a1408", marginBottom: "12px" }}>
               {locale === "tr" ? "Bülteni okumak için ödeme yapın" : "Pay to read this bulletin"}
             </h2>
-            <p style={{ fontFamily: "'Georgia', serif", fontSize: "15px", color: "#7a6f5a", marginBottom: "32px", lineHeight: 1.6 }}>
-              {locale === "tr"
-                ? "Bu bülten x402 protokolü ile korunmaktadır. Okumak için $0.01 USDC ödemeniz gerekiyor."
-                : "This bulletin is protected by the x402 protocol. Reading costs $0.01 USDC."}
-            </p>
 
-            <div style={{ display: "inline-block", border: "1.5px solid #1a1408", padding: "16px 32px", marginBottom: "16px" }}>
+            <div style={{ display: "inline-block", border: "1.5px solid #1a1408", padding: "16px 32px", marginBottom: "32px" }}>
               <div style={{ fontFamily: "monospace", fontSize: "22px", fontWeight: 700, color: "#1a1408" }}>$0.01</div>
               <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginTop: "4px" }}>USDC · Base Sepolia</div>
             </div>
 
-            <div style={{ marginTop: "24px", fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", lineHeight: 1.8 }}>
-              {locale === "tr"
-                ? "x402 protokolü ile ödeme yapın. Coinbase Wallet veya uyumlu bir EVM cüzdanı gereklidir."
-                : "Pay via x402 protocol. Requires Coinbase Wallet or compatible EVM wallet."}
-            </div>
+            <X402PayButton
+              payTo={PAY_TO}
+              amount="$0.01"
+              date={date}
+              locale={locale}
+              onSuccess={loadBulletin}
+            />
           </div>
 
-          {/* Footer */}
           <div style={{ borderTop: "0.5px solid #c8bfa8", marginTop: "40px", paddingTop: "12px", display: "flex", justifyContent: "space-between", fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a" }}>
             <span>{t("footerNote")}</span>
             <span style={{ color: "#8b6914" }}>BASE / 2026</span>

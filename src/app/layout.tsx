@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
+import { WagmiProvider } from "@/components/WagmiProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,8 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Base Daily Brief",
-  description:
-    "Base ekosisteminden süzülmüş, kaynaklı günlük özetler. Finansal tavsiye içermez.",
+  description: "Base ekosisteminden süzülmüş, kaynaklı günlük özetler.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <LanguageProvider>{children}</LanguageProvider>
+        <WagmiProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </WagmiProvider>
       </body>
     </html>
   );
