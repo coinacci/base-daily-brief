@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useConnect, useAccount, useDisconnect, useConnectors, useSwitchChain } from "wagmi";
 import { createWalletClient, custom, parseUnits } from "viem";
 import { baseSepolia } from "viem/chains";
@@ -34,9 +34,29 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
   const { switchChainAsync } = useSwitchChain();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
+  const [hasInjected, setHasInjected] = useState(false);
+
+  useEffect(() => {
+    // window.ethereum var mı kontrol et
+    setHasInjected(typeof window !== "undefined" && !!window.ethereum);
+  }, []);
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
-  const injectedConnector = connectors.find((c) => c.id === "injected" || c.id === "metaMask");
+  const injectedConnector = connectors.find(
+    (c) => c.id === "injected" || c.id === "metaMask" || c.id === "io.metamask"
+  );
+
+  function handleEVMConnect() {
+    if (injectedConnector) {
+      connect({ connector: injectedConnector });
+    } else if (hasInjected && connectors.length > 0) {
+      // injected bulunamazsa ilk non-coinbase connector'ı dene
+      const fallback = connectors.find((c) => c.id !== "coinbaseWalletSDK");
+      if (fallback) connect({ connector: fallback });
+    } else {
+      window.open("https://metamask.io/download/", "_blank");
+    }
+  }
 
   async function handlePay() {
     if (!address) return;
@@ -47,11 +67,9 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
     setPaying(true);
     setError("");
     try {
-      // Base Sepolia'ya geç
       if (chainId !== baseSepolia.id) {
         await switchChainAsync({ chainId: baseSepolia.id });
       }
-
       const client = createWalletClient({
         chain: baseSepolia,
         transport: custom(window.ethereum as Parameters<typeof custom>[0]),
@@ -90,21 +108,16 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
               </button>
             )}
             <button
-              onClick={() => {
-                if (injectedConnector) {
-                  connect({ connector: injectedConnector });
-                } else {
-                  window.open("https://metamask.io/download/", "_blank");
-                }
-              }}
-              style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8bfa8", padding: "12px 24px", background: "#f5f0e8", color: "#2a2010", cursor: "pointer", letterSpacing: "0.06em", width: "240px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+              onClick={handleEVMConnect}
+              style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8bfa8", padding: "12px 24px", background: "#f5f0e8", color: "#2a2010", cursor: "pointer", letterSpacing: "0.06em", width: "240px" }}
             >
-              <span style={{ fontSize: "14px" }}>🦊</span>
-              {locale === "tr" ? "Tarayıcı Cüzdanı" : "Browser Wallet"}
+              EVM Wallet
             </button>
           </div>
           <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c8bfa8", marginTop: "14px" }}>
-            {locale === "tr" ? "MetaMask, Rainbow, Rabby ve diğer EVM cüzdanları desteklenir" : "MetaMask, Rainbow, Rabby and other EVM wallets supported"}
+            {locale === "tr"
+              ? "MetaMask, Rainbow, Rabby ve diğer EVM cüzdanları desteklenir"
+              : "MetaMask, Rainbow, Rabby and other EVM wallets supported"}
           </p>
         </div>
       ) : (
