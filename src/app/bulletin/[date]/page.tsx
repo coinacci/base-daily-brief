@@ -86,7 +86,7 @@ export default function BulletinDetailPage() {
               amount="$0.01"
               date={date}
               locale={locale}
-              onSuccess={loadBulletin}
+              onSuccess={(data) => { setBulletin(data as any); setPaymentRequired(false); setLoading(false); }}
             />
           </div>
 
