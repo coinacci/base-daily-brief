@@ -34,27 +34,71 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
   const { switchChainAsync } = useSwitchChain();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
-  const [hasInjected, setHasInjected] = useState(false);
-
-  useEffect(() => {
-    // window.ethereum var mı kontrol et
-    setHasInjected(typeof window !== "undefined" && !!window.ethereum);
-  }, []);
+  const [evmAddress, setEvmAddress] = useState<string | null>(null);
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
-  const injectedConnector = connectors.find(
-    (c) => c.id === "injected" || c.id === "metaMask" || c.id === "io.metamask"
-  );
 
-  function handleEVMConnect() {
-    if (injectedConnector) {
-      connect({ connector: injectedConnector });
-    } else if (hasInjected && connectors.length > 0) {
-      // injected bulunamazsa ilk non-coinbase connector'ı dene
-      const fallback = connectors.find((c) => c.id !== "coinbaseWalletSDK");
-      if (fallback) connect({ connector: fallback });
-    } else {
+  // window.ethereum ile direkt bağlan
+  async function handleEVMConnect() {
+    if (typeof window === "undefined" || !window.ethereum) {
       window.open("https://metamask.io/download/", "_blank");
+      return;
+    }
+    try {
+      const accounts = await (window.ethereum as any).request({ method: "eth_requestAccounts" });
+      if (accounts && accounts[0]) {
+        setEvmAddress(accounts[0]);
+      }
+    } catch (e) {
+      setError(locale === "tr" ? "Cüzdan bağlantısı reddedildi" : "Wallet connection rejected");
+    }
+  }
+
+  async function handleEVMPay() {
+    if (!evmAddress || !window.ethereum) return;
+    setPaying(true);
+    setError("");
+    try {
+      // Önce Base Sepolia'ya geç
+      try {
+        await (window.ethereum as any).request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x14A34" }], // 84532 hex
+        });
+      } catch (switchError: any) {
+        // Ağ eklenmemişse ekle
+        if (switchError.code === 4902) {
+          await (window.ethereum as any).request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: "0x14A34",
+              chainName: "Base Sepolia",
+              nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://sepolia.base.org"],
+              blockExplorerUrls: ["https://sepolia.basescan.org"],
+            }],
+          });
+        }
+      }
+
+      const client = createWalletClient({
+        chain: baseSepolia,
+        transport: custom(window.ethereum as Parameters<typeof custom>[0]),
+      });
+      const usdcAmount = parseUnits("0.01", 6);
+      await client.writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: "transfer",
+        args: [payTo as `0x${string}`, usdcAmount],
+        account: evmAddress as `0x${string}`,
+      });
+      onSuccess();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Ödeme başarısız";
+      setError(msg);
+    } finally {
+      setPaying(false);
     }
   }
 
@@ -89,6 +133,37 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
     } finally {
       setPaying(false);
     }
+  }
+
+  // EVM cüzdan bağlıysa ödeme ekranı göster
+  if (evmAddress) {
+    return (
+      <div style={{ textAlign: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
+            {`${evmAddress.slice(0, 6)}...${evmAddress.slice(-4)}`}
+          </span>
+          <button
+            onClick={() => setEvmAddress(null)}
+            style={{ fontFamily: "monospace", fontSize: "11px", background: "none", border: "0.5px solid #c8bfa8", color: "#7a6f5a", cursor: "pointer", padding: "4px 10px" }}
+          >
+            {locale === "tr" ? "Bağlantıyı kes" : "Disconnect"}
+          </button>
+        </div>
+        <button
+          onClick={handleEVMPay}
+          disabled={paying}
+          style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid #1a1408", padding: "12px 28px", background: paying ? "#c8bfa8" : "#1a1408", color: "#f5f0e8", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
+        >
+          {paying
+            ? (locale === "tr" ? "İşleniyor..." : "Processing...")
+            : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
+        </button>
+        {error && (
+          <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>{error}</p>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -150,9 +225,7 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
               : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
           </button>
           {error && (
-            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>
-              {error}
-            </p>
+            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>{error}</p>
           )}
         </div>
       )}
