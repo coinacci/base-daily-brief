@@ -74,7 +74,7 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
               chainId: "0x14A34",
               chainName: "Base Sepolia",
               nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://sepolia.base.org"],
+              rpcUrls: ["https://base-sepolia.g.alchemy.com/v2/demo"],
               blockExplorerUrls: ["https://sepolia.basescan.org"],
             }],
           });

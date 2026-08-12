@@ -15,6 +15,6 @@ export const wagmiConfig = createConfig({
     injected(),
   ],
   transports: {
-    [baseSepolia.id]: http(),
+    [baseSepolia.id]: http("https://base-sepolia.g.alchemy.com/v2/demo"),
   },
 });
