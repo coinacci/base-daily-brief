@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useConnect, useAccount, useDisconnect } from "wagmi";
+import { useConnect, useAccount, useDisconnect, useConnectors } from "wagmi";
 import { createWalletClient, custom, parseUnits } from "viem";
 import { baseSepolia } from "viem/chains";
 
@@ -27,7 +27,8 @@ interface Props {
 }
 
 export function X402PayButton({ payTo, locale, onSuccess }: Props) {
-  const { connect, connectors } = useConnect();
+  const { connect } = useConnect();
+  const connectors = useConnectors();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [paying, setPaying] = useState(false);
@@ -82,15 +83,21 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
                 Base Wallet
               </button>
             )}
-            {injectedConnector && (
-              <button
-                onClick={() => connect({ connector: injectedConnector })}
-                style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8bfa8", padding: "12px 24px", background: "#f5f0e8", color: "#2a2010", cursor: "pointer", letterSpacing: "0.06em", width: "240px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-              >
-                <span style={{ fontSize: "14px" }}>🦊</span>
-                {locale === "tr" ? "Tarayıcı Cüzdanı" : "Browser Wallet"}
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (injectedConnector) {
+                  connect({ connector: injectedConnector });
+                } else if (typeof window !== "undefined" && window.ethereum) {
+                  connect({ connector: connectors[0] });
+                } else {
+                  window.open("https://metamask.io/download/", "_blank");
+                }
+              }}
+              style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8bfa8", padding: "12px 24px", background: "#f5f0e8", color: "#2a2010", cursor: "pointer", letterSpacing: "0.06em", width: "240px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+            >
+              <span style={{ fontSize: "14px" }}>🦊</span>
+              {locale === "tr" ? "Tarayıcı Cüzdanı" : "Browser Wallet"}
+            </button>
           </div>
           <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c8bfa8", marginTop: "14px" }}>
             {locale === "tr" ? "MetaMask, Rainbow, Rabby ve diğer EVM cüzdanları desteklenir" : "MetaMask, Rainbow, Rabby and other EVM wallets supported"}
@@ -98,12 +105,17 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
         </div>
       ) : (
         <div>
-          <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginBottom: "12px" }}>
-            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
-            <button onClick={() => disconnect()} style={{ marginLeft: "8px", background: "none", border: "none", color: "#c8bfa8", cursor: "pointer", fontSize: "10px" }}>
-              ✕
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
+            <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
+              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
+            </span>
+            <button
+              onClick={() => disconnect()}
+              style={{ fontFamily: "monospace", fontSize: "11px", background: "none", border: "0.5px solid #c8bfa8", color: "#7a6f5a", cursor: "pointer", padding: "4px 10px", borderRadius: "2px" }}
+            >
+              {locale === "tr" ? "Bağlantıyı kes" : "Disconnect"}
             </button>
-          </p>
+          </div>
           <button
             onClick={handlePay}
             disabled={paying}
