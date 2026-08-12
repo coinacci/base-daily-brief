@@ -1,145 +1,108 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/LanguageContext";
+import type { Locale } from "@/lib/bulletins";
 
 export default function AdminPage() {
+  const { t } = useLanguage();
   const [password, setPassword] = useState("");
-  const [date, setDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().slice(0, 10);
-  });
+  const [authed, setAuthed] = useState(false);
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
-    "idle"
-  );
-  const [message, setMessage] = useState("");
-  const [savedDate, setSavedDate] = useState("");
+  const [locale, setLocale] = useState<Locale>("tr");
+  const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
-    setMessage("");
-    setSavedDate("");
+  async function handleSubmit() {
+    setStatus("idle");
+    const res = await fetch("/api/admin/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, date, title, content, locale }),
+    });
+    setStatus(res.ok ? "ok" : "err");
+  }
 
-    try {
-      const res = await fetch("/api/admin/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, date, title, content }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setStatus("error");
-        setMessage(data.error || "Kayıt başarısız");
-        return;
-      }
-
-      setStatus("ok");
-      setSavedDate(data.bulletin.date);
-      setMessage(`Bülten kaydedildi: ${data.bulletin.date}`);
-      setContent("");
-      setTitle("");
-    } catch {
-      setStatus("error");
-      setMessage("Bağlantı hatası");
-    }
+  if (!authed) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-4">
+          <h1 className="text-xl font-semibold">Admin</h1>
+          <input
+            type="password"
+            placeholder="Şifre"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && setAuthed(true)}
+            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
+          />
+          <button
+            onClick={() => setAuthed(true)}
+            className="w-full rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2.5 text-sm font-medium transition"
+          >
+            Giriş
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 px-4 py-10">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">
-          Admin — Bülten Ekle
-        </h1>
-        <p className="text-zinc-400 text-sm mb-2">
-          Local kullanım içindir. Kayıt sonrası Git ile yayınlanır.
-        </p>
-        <p className="text-zinc-500 text-xs mb-8 font-mono">
-          git add content/bulletins && git commit -m &quot;brief: TARIH&quot; && git push
-        </p>
+      <div className="mx-auto max-w-2xl space-y-5">
+        <h1 className="text-2xl font-semibold">{t("adminTitle")}</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1">Şifre</label>
+        <div className="flex gap-3">
+          <div className="flex-1 space-y-1">
+            <label className="text-xs text-zinc-400">{t("adminDate")}</label>
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1">
-              Tarih (YYYY-MM-DD)
-            </label>
-            <input
-              type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
             />
           </div>
-
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1">Başlık</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Base Daily Brief — 11 Ağustos 2026"
-              className="w-full rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1">
-              İçerik (Markdown)
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={22}
-              placeholder="Bülten şablonunu buraya yapıştır..."
-              className="w-full rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={status === "loading"}
-            className="rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 px-4 py-2 text-sm font-medium transition"
-          >
-            {status === "loading" ? "Kaydediliyor..." : "Bülteni Kaydet"}
-          </button>
-
-          {message && (
-            <p
-              className={`text-sm ${
-                status === "ok" ? "text-emerald-400" : "text-red-400"
-              }`}
+          <div className="space-y-1">
+            <label className="text-xs text-zinc-400">{t("adminLocale")}</label>
+            <select
+              value={locale}
+              onChange={(e) => setLocale(e.target.value as Locale)}
+              className="rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500 h-[42px]"
             >
-              {message}
-            </p>
-          )}
+              <option value="tr">Türkçe</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
 
-          {status === "ok" && savedDate && (
-            <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-300 space-y-2">
-              <p className="font-medium text-zinc-100">Yayınlamak için:</p>
-              <pre className="text-xs text-zinc-400 overflow-x-auto whitespace-pre-wrap">
-{`git add content/bulletins/${savedDate}.md
-git commit -m "brief: ${savedDate}"
-git push`}
-              </pre>
-            </div>
-          )}
-        </form>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-400">{t("adminTitleLabel")}</label>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-400">{t("adminContent")}</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={16}
+            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500 font-mono resize-none"
+          />
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="rounded-lg bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-sm font-medium transition"
+        >
+          {t("adminSave")}
+        </button>
+
+        {status === "ok" && <p className="text-sm text-green-400">{t("adminSuccess")}</p>}
+        {status === "err" && <p className="text-sm text-red-400">{t("adminError")}</p>}
       </div>
     </main>
   );

@@ -1,28 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveBulletin } from "@/lib/bulletins";
+import { saveBulletin, type Locale } from "@/lib/bulletins";
 
 export async function POST(req: NextRequest) {
+  const { password, date, title, content, locale = "tr" } = await req.json();
+
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const body = await req.json();
-    const { password, date, title, content } = body;
-
-    const adminPassword = process.env.ADMIN_PASSWORD || "changeme";
-
-    if (!password || password !== adminPassword) {
-      return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
-    }
-
-    if (!date || !title || !content) {
-      return NextResponse.json(
-        { error: "date, title ve content zorunlu" },
-        { status: 400 }
-      );
-    }
-
-    const saved = saveBulletin(date, title, content);
-    return NextResponse.json({ ok: true, bulletin: saved });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Kayıt hatası";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const result = saveBulletin(date, title, "", content, locale as Locale);
+    return NextResponse.json(result);
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Bilinmeyen hata";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
