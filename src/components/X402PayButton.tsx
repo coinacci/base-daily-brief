@@ -34,12 +34,12 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
   const [error, setError] = useState("");
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
-  const mmConnector = connectors.find((c) => c.id === "metaMaskSDK" || c.id === "io.metamask");
+  const injectedConnector = connectors.find((c) => c.id === "injected");
 
   async function handlePay() {
     if (!address) return;
     if (typeof window === "undefined" || !window.ethereum) {
-      setError("Cüzdan bulunamadı");
+      setError(locale === "tr" ? "Tarayıcı cüzdanı bulunamadı" : "No browser wallet found");
       return;
     }
     setPaying(true);
@@ -82,15 +82,15 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
                 onClick={() => connect({ connector: cbConnector })}
                 style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #1a1408", padding: "10px 20px", background: "#1a1408", color: "#f5f0e8", cursor: "pointer", letterSpacing: "0.06em" }}
               >
-                Coinbase Wallet
+                Base Wallet
               </button>
             )}
-            {mmConnector && (
+            {injectedConnector && (
               <button
-                onClick={() => connect({ connector: mmConnector })}
+                onClick={() => connect({ connector: injectedConnector })}
                 style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8a84a", padding: "10px 20px", background: "#f0e4c0", color: "#8b6914", cursor: "pointer", letterSpacing: "0.06em" }}
               >
-                MetaMask
+                {locale === "tr" ? "Tarayıcı Cüzdanı" : "Browser Wallet"}
               </button>
             )}
           </div>
