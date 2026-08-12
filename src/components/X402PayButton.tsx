@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useConnect, useAccount, useDisconnect, useConnectors } from "wagmi";
+import { useConnect, useAccount, useDisconnect, useConnectors, useSwitchChain } from "wagmi";
 import { createWalletClient, custom, parseUnits } from "viem";
 import { baseSepolia } from "viem/chains";
 
@@ -29,13 +29,14 @@ interface Props {
 export function X402PayButton({ payTo, locale, onSuccess }: Props) {
   const { connect } = useConnect();
   const connectors = useConnectors();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { disconnect } = useDisconnect();
+  const { switchChainAsync } = useSwitchChain();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
-  const injectedConnector = connectors.find((c) => c.id === "injected");
+  const injectedConnector = connectors.find((c) => c.id === "injected" || c.id === "metaMask");
 
   async function handlePay() {
     if (!address) return;
@@ -46,6 +47,11 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
     setPaying(true);
     setError("");
     try {
+      // Base Sepolia'ya geç
+      if (chainId !== baseSepolia.id) {
+        await switchChainAsync({ chainId: baseSepolia.id });
+      }
+
       const client = createWalletClient({
         chain: baseSepolia,
         transport: custom(window.ethereum as Parameters<typeof custom>[0]),
@@ -87,8 +93,6 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
               onClick={() => {
                 if (injectedConnector) {
                   connect({ connector: injectedConnector });
-                } else if (typeof window !== "undefined" && window.ethereum) {
-                  connect({ connector: connectors[0] });
                 } else {
                   window.open("https://metamask.io/download/", "_blank");
                 }
@@ -109,9 +113,14 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
             <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
               {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
             </span>
+            {chainId !== baseSepolia.id && (
+              <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", background: "#fdf0ed", border: "0.5px solid #e74c3c", padding: "2px 8px" }}>
+                {locale === "tr" ? "Yanlış ağ" : "Wrong network"}
+              </span>
+            )}
             <button
               onClick={() => disconnect()}
-              style={{ fontFamily: "monospace", fontSize: "11px", background: "none", border: "0.5px solid #c8bfa8", color: "#7a6f5a", cursor: "pointer", padding: "4px 10px", borderRadius: "2px" }}
+              style={{ fontFamily: "monospace", fontSize: "11px", background: "none", border: "0.5px solid #c8bfa8", color: "#7a6f5a", cursor: "pointer", padding: "4px 10px" }}
             >
               {locale === "tr" ? "Bağlantıyı kes" : "Disconnect"}
             </button>
@@ -123,6 +132,8 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
           >
             {paying
               ? (locale === "tr" ? "İşleniyor..." : "Processing...")
+              : chainId !== baseSepolia.id
+              ? (locale === "tr" ? "Base Sepolia'ya geç ve öde" : "Switch to Base Sepolia & pay")
               : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
           </button>
           {error && (
