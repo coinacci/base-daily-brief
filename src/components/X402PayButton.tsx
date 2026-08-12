@@ -49,9 +49,7 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
         chain: baseSepolia,
         transport: custom(window.ethereum as Parameters<typeof custom>[0]),
       });
-
       const usdcAmount = parseUnits("0.01", 6);
-
       await client.writeContract({
         address: USDC_ADDRESS,
         abi: USDC_ABI,
@@ -59,7 +57,6 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
         args: [payTo as `0x${string}`, usdcAmount],
         account: address as `0x${string}`,
       });
-
       onSuccess();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Ödeme başarısız";
@@ -73,14 +70,14 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
     <div style={{ textAlign: "center" }}>
       {!isConnected ? (
         <div>
-          <p style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", marginBottom: "16px", letterSpacing: "0.05em" }}>
+          <p style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", marginBottom: "20px", letterSpacing: "0.05em" }}>
             {locale === "tr" ? "Cüzdanını bağla ve ödeme yap" : "Connect your wallet to pay"}
           </p>
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}>
             {cbConnector && (
               <button
                 onClick={() => connect({ connector: cbConnector })}
-                style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #1a1408", padding: "10px 20px", background: "#1a1408", color: "#f5f0e8", cursor: "pointer", letterSpacing: "0.06em" }}
+                style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #1a1408", padding: "12px 24px", background: "#1a1408", color: "#f5f0e8", cursor: "pointer", letterSpacing: "0.06em", width: "240px" }}
               >
                 Base Wallet
               </button>
@@ -88,12 +85,16 @@ export function X402PayButton({ payTo, locale, onSuccess }: Props) {
             {injectedConnector && (
               <button
                 onClick={() => connect({ connector: injectedConnector })}
-                style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8a84a", padding: "10px 20px", background: "#f0e4c0", color: "#8b6914", cursor: "pointer", letterSpacing: "0.06em" }}
+                style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid #c8bfa8", padding: "12px 24px", background: "#f5f0e8", color: "#2a2010", cursor: "pointer", letterSpacing: "0.06em", width: "240px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
               >
+                <span style={{ fontSize: "14px" }}>🦊</span>
                 {locale === "tr" ? "Tarayıcı Cüzdanı" : "Browser Wallet"}
               </button>
             )}
           </div>
+          <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c8bfa8", marginTop: "14px" }}>
+            {locale === "tr" ? "MetaMask, Rainbow, Rabby ve diğer EVM cüzdanları desteklenir" : "MetaMask, Rainbow, Rabby and other EVM wallets supported"}
+          </p>
         </div>
       ) : (
         <div>
