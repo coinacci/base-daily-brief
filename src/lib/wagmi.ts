@@ -1,6 +1,6 @@
-import { createConfig, http } from "wagmi";
+import { createConfig, http, injected } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
-import { coinbaseWallet, metaMask } from "wagmi/connectors";
+import { coinbaseWallet } from "wagmi/connectors";
 
 export const wagmiConfig = createConfig({
   chains: [baseSepolia],
@@ -9,7 +9,10 @@ export const wagmiConfig = createConfig({
       appName: "Base Daily Brief",
       preference: "smartWalletOnly",
     }),
-    metaMask(),
+    injected({
+      target: "metaMask",
+    }),
+    injected(),
   ],
   transports: {
     [baseSepolia.id]: http(),
