@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useConnect, useAccount, useDisconnect } from "wagmi";
-import { coinbaseWallet, metaMask } from "wagmi/connectors";
-import { createWalletClient, custom, parseUnits, encodeFunctionData } from "viem";
+import { createWalletClient, custom, parseUnits } from "viem";
 import { baseSepolia } from "viem/chains";
 
-const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e"; // Base Sepolia USDC
+const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 const USDC_ABI = [
   {
     name: "transfer",
@@ -21,13 +20,13 @@ const USDC_ABI = [
 
 interface Props {
   payTo: string;
-  amount: string; // e.g. "$0.01"
+  amount: string;
   date: string;
   locale: string;
   onSuccess: () => void;
 }
 
-export function X402PayButton({ payTo, amount, date, locale, onSuccess }: Props) {
+export function X402PayButton({ payTo, locale, onSuccess }: Props) {
   const { connect, connectors } = useConnect();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -38,13 +37,17 @@ export function X402PayButton({ payTo, amount, date, locale, onSuccess }: Props)
   const mmConnector = connectors.find((c) => c.id === "metaMaskSDK" || c.id === "io.metamask");
 
   async function handlePay() {
-    if (!address || !window.ethereum) return;
+    if (!address) return;
+    if (typeof window === "undefined" || !window.ethereum) {
+      setError("Cüzdan bulunamadı");
+      return;
+    }
     setPaying(true);
     setError("");
     try {
       const client = createWalletClient({
         chain: baseSepolia,
-        transport: custom(window.ethereum),
+        transport: custom(window.ethereum as Parameters<typeof custom>[0]),
       });
 
       const usdcAmount = parseUnits("0.01", 6);
@@ -54,7 +57,7 @@ export function X402PayButton({ payTo, amount, date, locale, onSuccess }: Props)
         abi: USDC_ABI,
         functionName: "transfer",
         args: [payTo as `0x${string}`, usdcAmount],
-        account: address,
+        account: address as `0x${string}`,
       });
 
       onSuccess();
@@ -95,7 +98,7 @@ export function X402PayButton({ payTo, amount, date, locale, onSuccess }: Props)
       ) : (
         <div>
           <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginBottom: "12px" }}>
-            {address.slice(0, 6)}...{address.slice(-4)}
+            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
             <button onClick={() => disconnect()} style={{ marginLeft: "8px", background: "none", border: "none", color: "#c8bfa8", cursor: "pointer", fontSize: "10px" }}>
               ✕
             </button>
@@ -107,7 +110,7 @@ export function X402PayButton({ payTo, amount, date, locale, onSuccess }: Props)
           >
             {paying
               ? (locale === "tr" ? "İşleniyor..." : "Processing...")
-              : (locale === "tr" ? `Öde — $0.01 USDC` : `Pay — $0.01 USDC`)}
+              : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
           </button>
           {error && (
             <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>
