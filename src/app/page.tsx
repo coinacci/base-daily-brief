@@ -150,7 +150,22 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 const res = await fetchWithPay(
   "https://basedailybrief.vercel.app/api/bulletins/2026-08-13?locale=en"
 );
-const bulletin = await res.json();`}</pre>
+const bulletin = await res.json();
+
+// --- OR: Subscribe once, fetch for 30 days ---
+// Step 1: Pay $0.25 once to get an API key
+const subRes = await fetchWithPay(
+  "https://basedailybrief.vercel.app/api/subscribe",
+  { method: "POST" }
+);
+const { apiKey } = await subRes.json();
+
+// Step 2: Use the key daily (no more payments)
+const res2 = await fetch(
+  "https://basedailybrief.vercel.app/api/bulletins/2026-08-14?locale=en",
+  { headers: { "X-API-Key": apiKey } }
+);
+const bulletin2 = await res2.json();`}</pre>
           </div>
 
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
