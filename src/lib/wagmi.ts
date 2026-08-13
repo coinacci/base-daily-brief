@@ -12,7 +12,7 @@ export const wagmiConfig = createConfig({
   connectors: [
     coinbaseWallet({
       appName: "Base Daily Brief",
-      preference: "smartWalletOnly",
+      preference: { options: "smartWalletOnly" },
     }),
     injected({
       target: "metaMask",
