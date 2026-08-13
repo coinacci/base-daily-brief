@@ -62,16 +62,18 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     }
   }
 
-  async function payWithEVM(addr: string, ethereum: any) {
+  async function payWithAddress(addr: string, ethereum: any) {
     setPaying(true);
     setError("");
     try {
       await switchToBase(ethereum);
+
       const wallet = createWalletClient({
         account: addr as `0x${string}`,
         chain: base,
         transport: custom(ethereum),
       });
+
       const signer = {
         address: addr as `0x${string}`,
         signTypedData: async (params: any) =>
@@ -83,49 +85,19 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
             message: params.message,
           }),
       };
-      const client = new x402Client();
-      registerExactEvmScheme(client, { signer });
-      const fetchWithPay = wrapFetchWithPayment(fetch, client);
-      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`);
-      if (res.ok) {
-        const data = await res.json();
-        onSuccess(data);
-      } else {
-        throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
-      }
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Ödeme başarısız";
-      setError(msg);
-    } finally {
-      setPaying(false);
-    }
-  }
 
-  async function payWithWagmi() {
-    if (!walletClient || !address) return;
-    setPaying(true);
-    setError("");
-    try {
-      if (chainId !== base.id && window.ethereum) {
-        await switchToBase(window.ethereum);
-      }
-      const signer = {
-        address,
-        signTypedData: async (params: any) =>
-          walletClient.signTypedData({
-            account: walletClient.account!,
-            domain: params.domain,
-            types: params.types,
-            primaryType: params.primaryType,
-            message: params.message,
-          }),
-      };
       const client = new x402Client();
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
-      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`);
+
+      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`, {
+        headers: { "x-wallet-address": addr },
+      });
+
       if (res.ok) {
         const data = await res.json();
+        // localStorage'a kaydet — aynı gün tekrar ödeme yapmasın
+        localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
         onSuccess(data);
       } else {
         throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
@@ -150,7 +122,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
           </button>
         </div>
         <button
-          onClick={() => payWithEVM(evmAddress, window.ethereum)}
+          onClick={() => payWithAddress(evmAddress, window.ethereum)}
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid #1a1408", padding: "12px 28px", background: paying ? "#c8bfa8" : "#1a1408", color: "#f5f0e8", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >
@@ -173,7 +145,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
           </button>
         </div>
         <button
-          onClick={payWithWagmi}
+          onClick={() => payWithAddress(address, window.ethereum)}
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid #1a1408", padding: "12px 28px", background: paying ? "#c8bfa8" : "#1a1408", color: "#f5f0e8", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >

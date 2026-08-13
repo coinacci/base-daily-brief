@@ -20,11 +20,15 @@ export default function BulletinDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
 
-  function loadBulletin() {
+  function loadBulletin(walletAddress?: string) {
     setLoading(true);
     setNotFound(false);
     setPaymentRequired(false);
-    fetch(`/api/bulletins/${date}?locale=${locale}`)
+
+    const headers: Record<string, string> = {};
+    if (walletAddress) headers["x-wallet-address"] = walletAddress;
+
+    fetch(`/api/bulletins/${date}?locale=${locale}`, { headers })
       .then((r) => {
         if (r.status === 402) { setPaymentRequired(true); setLoading(false); return null; }
         if (r.status === 404) { setNotFound(true); setLoading(false); return null; }
@@ -36,7 +40,21 @@ export default function BulletinDetailPage() {
   }
 
   useEffect(() => {
-    loadBulletin();
+    // localStorage'da ödeme kaydı var mı kontrol et
+    const checkLocalPayment = () => {
+      if (typeof window === "undefined") return null;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith("paid:") && key.endsWith(`:${date}`)) {
+          const walletAddress = key.split(":")[1];
+          return walletAddress;
+        }
+      }
+      return null;
+    };
+
+    const paidWallet = checkLocalPayment();
+    loadBulletin(paidWallet ?? undefined);
   }, [date, locale]);
 
   if (loading) {
@@ -75,6 +93,11 @@ export default function BulletinDetailPage() {
             <h2 style={{ fontFamily: "'Georgia', serif", fontSize: "22px", fontWeight: 900, color: "#1a1408", marginBottom: "12px" }}>
               {locale === "tr" ? "Bülteni okumak için ödeme yapın" : "Pay to read this bulletin"}
             </h2>
+            <p style={{ fontFamily: "'Georgia', serif", fontSize: "14px", color: "#7a6f5a", marginBottom: "32px", lineHeight: 1.6 }}>
+              {locale === "tr"
+                ? "Bugün bir kez öde, gün boyu tekrar ödeme yapma."
+                : "Pay once today, read all day without paying again."}
+            </p>
 
             <div style={{ display: "inline-block", border: "1.5px solid #1a1408", padding: "16px 32px", marginBottom: "32px" }}>
               <div style={{ fontFamily: "monospace", fontSize: "22px", fontWeight: 700, color: "#1a1408" }}>$0.01</div>
@@ -86,7 +109,11 @@ export default function BulletinDetailPage() {
               amount="$0.01"
               date={date}
               locale={locale}
-              onSuccess={(data) => { setBulletin(data as any); setPaymentRequired(false); setLoading(false); }}
+              onSuccess={(data) => {
+                setBulletin(data as Bulletin);
+                setPaymentRequired(false);
+                setLoading(false);
+              }}
             />
           </div>
 

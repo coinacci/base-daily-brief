@@ -44,7 +44,6 @@ export async function saveSubscription(
   const ttlSeconds = days * 24 * 60 * 60;
   await redis.set(`sub:${apiKey}`, data, { ex: ttlSeconds });
 
-  // Webhook varsa kaydet
   if (callbackUrl) {
     await redis.sadd("webhooks:active", apiKey);
   }
@@ -70,7 +69,6 @@ export async function getActiveWebhooks(): Promise<WebhookData[]> {
   for (const apiKey of keys) {
     const sub = await getSubscription(apiKey);
     if (!sub || !sub.callbackUrl) {
-      // Süresi dolmuş — listeden çıkar
       await redis.srem("webhooks:active", apiKey);
       continue;
     }
@@ -82,4 +80,27 @@ export async function getActiveWebhooks(): Promise<WebhookData[]> {
     });
   }
   return webhooks;
+}
+
+// Günlük ödeme cache — cüzdan + tarih bazlı
+export async function markBulletinPaid(
+  walletAddress: string,
+  date: string
+): Promise<void> {
+  const key = `paid:${walletAddress.toLowerCase()}:${date}`;
+  // Gece yarısına kadar geçerli
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setUTCHours(24, 0, 0, 0);
+  const ttlSeconds = Math.ceil((midnight.getTime() - now.getTime()) / 1000);
+  await redis.set(key, 1, { ex: ttlSeconds });
+}
+
+export async function isBulletinPaid(
+  walletAddress: string,
+  date: string
+): Promise<boolean> {
+  const key = `paid:${walletAddress.toLowerCase()}:${date}`;
+  const val = await redis.get(key);
+  return val !== null;
 }
