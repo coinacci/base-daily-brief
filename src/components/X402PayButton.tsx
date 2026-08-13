@@ -18,7 +18,7 @@ interface Props {
 export function X402PayButton({ date, locale, onSuccess }: Props) {
   const { connect } = useConnect();
   const connectors = useConnectors();
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: walletClient } = useWalletClient();
   const [paying, setPaying] = useState(false);
@@ -62,16 +62,58 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     }
   }
 
-  async function payWithAddress(addr: string, ethereum: any) {
+  // Base Wallet (wagmi walletClient) ile ödeme
+  async function payWithWagmi() {
+    if (!walletClient || !address) return;
     setPaying(true);
     setError("");
     try {
-      await switchToBase(ethereum);
+      const signer = {
+        address,
+        signTypedData: async (params: any) =>
+          walletClient.signTypedData({
+            account: walletClient.account!,
+            domain: params.domain,
+            types: params.types,
+            primaryType: params.primaryType,
+            message: params.message,
+          }),
+      };
+
+      const client = new x402Client();
+      registerExactEvmScheme(client, { signer });
+      const fetchWithPay = wrapFetchWithPayment(fetch, client);
+
+      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`, {
+        headers: { "x-wallet-address": address },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem(`paid:${address.toLowerCase()}:${date}`, "1");
+        onSuccess(data);
+      } else {
+        throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Ödeme başarısız";
+      setError(msg);
+    } finally {
+      setPaying(false);
+    }
+  }
+
+  // EVM Wallet (window.ethereum) ile ödeme
+  async function payWithEVM(addr: string) {
+    setPaying(true);
+    setError("");
+    try {
+      await switchToBase(window.ethereum);
 
       const wallet = createWalletClient({
         account: addr as `0x${string}`,
         chain: base,
-        transport: custom(ethereum),
+        transport: custom(window.ethereum as any),
       });
 
       const signer = {
@@ -96,7 +138,6 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
 
       if (res.ok) {
         const data = await res.json();
-        // localStorage'a kaydet — aynı gün tekrar ödeme yapmasın
         localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
         onSuccess(data);
       } else {
@@ -110,6 +151,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     }
   }
 
+  // EVM cüzdan bağlı
   if (evmAddress) {
     return (
       <div style={{ textAlign: "center" }}>
@@ -122,7 +164,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
           </button>
         </div>
         <button
-          onClick={() => payWithAddress(evmAddress, window.ethereum)}
+          onClick={() => payWithEVM(evmAddress)}
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid #1a1408", padding: "12px 28px", background: paying ? "#c8bfa8" : "#1a1408", color: "#f5f0e8", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >
@@ -133,6 +175,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     );
   }
 
+  // Base Wallet bağlı
   if (isConnected && address) {
     return (
       <div style={{ textAlign: "center" }}>
@@ -145,7 +188,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
           </button>
         </div>
         <button
-          onClick={() => payWithAddress(address, window.ethereum)}
+          onClick={payWithWagmi}
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid #1a1408", padding: "12px 28px", background: paying ? "#c8bfa8" : "#1a1408", color: "#f5f0e8", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >
@@ -156,6 +199,7 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     );
   }
 
+  // Cüzdan seçim ekranı
   return (
     <div style={{ textAlign: "center" }}>
       <p style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", marginBottom: "20px", letterSpacing: "0.05em" }}>
