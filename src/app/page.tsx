@@ -76,7 +76,7 @@ export default function HomePage() {
 
             {/* Arşiv */}
             {archive.length > 0 && (
-              <div>
+              <div style={{ marginBottom: "48px" }}>
                 <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "20px" }}>
                   — {t("archive")}
                 </div>
@@ -105,11 +105,59 @@ export default function HomePage() {
             )}
           </>
         ) : (
-          <p style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>{t("noBulletins")}</p>
+          <p style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a", marginBottom: "48px" }}>{t("noBulletins")}</p>
         )}
 
+        {/* For AI Agents */}
+        <div style={{ borderTop: "2px solid #1a1408", paddingTop: "24px", marginBottom: "40px" }}>
+          <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#0052FF", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "16px" }}>
+            — {locale === "tr" ? "AI Agent'lar için" : "For AI Agents"}
+          </div>
+          <p style={{ fontFamily: "'Georgia', serif", fontSize: "14px", color: "#4a3a1c", lineHeight: 1.7, marginBottom: "16px" }}>
+            {locale === "tr"
+              ? "Base Daily Brief, x402 protokolü üzerinden makine-okunur bir API sunar. Agent'lar tarayıcı veya kullanıcı arayüzüne ihtiyaç duymadan, sadece bir private key ile otomatik ödeme yapıp bülten içeriğini çekebilir."
+              : "Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required."}
+          </p>
+
+          <div style={{ background: "#1a1408", borderRadius: "4px", padding: "16px", marginBottom: "16px", overflowX: "auto" }}>
+            <pre style={{ fontFamily: "monospace", fontSize: "11px", color: "#f0e4c0", margin: 0, lineHeight: 1.7 }}>{`# Endpoint
+GET https://basedailybrief.vercel.app/api/bulletins/{date}?locale=en
+
+# Test: 402 dönmeli (ödeme gerekli)
+curl -I https://basedailybrief.vercel.app/api/bulletins/2026-08-13
+
+# x402-fetch ile otomatik ödeme (Node.js)
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { x402Client } from "@x402/core/client";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(process.env.PRIVATE_KEY);
+const client = new x402Client();
+registerExactEvmScheme(client, { signer });
+const fetchWithPay = wrapFetchWithPayment(fetch, client);
+
+const res = await fetchWithPay(
+  "https://basedailybrief.vercel.app/api/bulletins/2026-08-13?locale=en"
+);
+const bulletin = await res.json();`}</pre>
+          </div>
+
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <a href="/openapi.json" style={{ fontFamily: "monospace", fontSize: "10px", color: "#0052FF", textDecoration: "none", letterSpacing: "0.05em" }}>
+              OpenAPI spec →
+            </a>
+            <a href="/.well-known/agent-card.json" style={{ fontFamily: "monospace", fontSize: "10px", color: "#0052FF", textDecoration: "none", letterSpacing: "0.05em" }}>
+              Agent card →
+            </a>
+            <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", letterSpacing: "0.05em" }}>
+              $0.01 USDC · Base Mainnet · EIP-3009
+            </span>
+          </div>
+        </div>
+
         {/* Footer */}
-        <div style={{ borderTop: "0.5px solid #c8bfa8", marginTop: "40px", paddingTop: "12px", display: "flex", justifyContent: "space-between", fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", letterSpacing: "0.05em" }}>
+        <div style={{ borderTop: "0.5px solid #c8bfa8", paddingTop: "12px", display: "flex", justifyContent: "space-between", fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", letterSpacing: "0.05em" }}>
           <span>{t("footerNote")}</span>
           <span style={{ color: "#8b6914" }}>BASE / 2026</span>
         </div>
