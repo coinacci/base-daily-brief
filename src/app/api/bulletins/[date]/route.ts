@@ -1,21 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBulletin, type Locale } from "@/lib/bulletins";
 import { withX402 } from "@x402/next";
-import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
-import { ExactEvmScheme } from "@x402/evm/exact/server";
-import { createFacilitatorConfig } from "@coinbase/x402";
+import { createX402Server, x402Config } from "@/lib/x402";
 
 export const dynamic = "force-dynamic";
 
-const facilitatorConfig = createFacilitatorConfig(
-  process.env.CDP_API_KEY_ID!,
-  process.env.CDP_API_KEY_SECRET!
-);
-
-const facilitatorClient = new HTTPFacilitatorClient(facilitatorConfig);
-
-const server = new x402ResourceServer(facilitatorClient);
-server.register("eip155:8453", new ExactEvmScheme());
+const server = createX402Server();
 
 const handler = async (req: NextRequest): Promise<NextResponse> => {
   const url = new URL(req.url);
@@ -32,10 +22,10 @@ export const GET = withX402(
   {
     accepts: {
       scheme: "exact",
-      price: "$0.01",
-      network: "eip155:8453",
-      payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
-      extra: { builderCode: "bc_2iax4m4l" },
+      price: x402Config.price,
+      network: x402Config.network,
+      payTo: x402Config.payTo,
+      extra: { builderCode: x402Config.builderCode },
     },
     description: "Base Daily Brief — Günlük bülten erişimi",
     mimeType: "application/json",
