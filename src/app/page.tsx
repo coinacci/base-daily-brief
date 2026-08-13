@@ -10,6 +10,7 @@ export default function HomePage() {
   const { locale, t } = useLanguage();
   const [bulletins, setBulletins] = useState<BulletinMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -74,33 +75,44 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Arşiv */}
+            {/* Arşiv — dropdown */}
             {archive.length > 0 && (
-              <div style={{ marginBottom: "48px" }}>
-                <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "20px" }}>
-                  — {t("archive")}
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {archive.map((b) => (
-                    <li key={b.date} style={{ borderBottom: "0.5px solid #c8bfa8", paddingBottom: "20px", marginBottom: "20px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
-                        <span style={{ fontFamily: "'Georgia', serif", fontSize: "16px", fontWeight: 700, color: "#1a1408" }}>{b.title}</span>
-                        <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginLeft: "16px", flexShrink: 0 }}>{b.date}</span>
-                      </div>
-                      {b.summary && (
-                        <div style={{ fontFamily: "'Georgia', serif", fontStyle: "italic", fontSize: "13px", color: "#7a6f5a", borderLeft: "2px solid #c8bfa8", paddingLeft: "10px", marginBottom: "10px", lineHeight: 1.6 }}>
-                          {b.summary}
+              <div style={{ marginBottom: "48px", borderBottom: "0.5px solid #c8bfa8", paddingBottom: "24px" }}>
+                <button
+                  onClick={() => setArchiveOpen(!archiveOpen)}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", padding: "0 0 12px 0", borderBottom: archiveOpen ? "0.5px solid #c8bfa8" : "none" }}
+                >
+                  <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                    — {t("archive")} ({archive.length})
+                  </span>
+                  <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
+                    {archiveOpen ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {archiveOpen && (
+                  <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0 0" }}>
+                    {archive.map((b) => (
+                      <li key={b.date} style={{ borderBottom: "0.5px solid #e8e0d0", paddingBottom: "16px", marginBottom: "16px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
+                          <span style={{ fontFamily: "'Georgia', serif", fontSize: "15px", fontWeight: 700, color: "#1a1408" }}>{b.title}</span>
+                          <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginLeft: "16px", flexShrink: 0 }}>{b.date}</span>
                         </div>
-                      )}
-                      <Link
-                        href={`/bulletin/${b.date}`}
-                        style={{ fontFamily: "monospace", fontSize: "10px", color: "#8b6914", textDecoration: "none", letterSpacing: "0.05em" }}
-                      >
-                        {locale === "tr" ? "🔒 Oku — $0.01 USDC öde" : "🔒 Read — Pay $0.01 USDC"}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                        {b.summary && (
+                          <div style={{ fontFamily: "'Georgia', serif", fontStyle: "italic", fontSize: "13px", color: "#7a6f5a", borderLeft: "2px solid #c8bfa8", paddingLeft: "10px", marginBottom: "10px", lineHeight: 1.6 }}>
+                            {b.summary}
+                          </div>
+                        )}
+                        <Link
+                          href={`/bulletin/${b.date}`}
+                          style={{ fontFamily: "monospace", fontSize: "10px", color: "#8b6914", textDecoration: "none", letterSpacing: "0.05em" }}
+                        >
+                          {locale === "tr" ? "🔒 Oku — $0.01 USDC öde" : "🔒 Read — Pay $0.01 USDC"}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </>
@@ -111,12 +123,10 @@ export default function HomePage() {
         {/* For AI Agents */}
         <div style={{ borderTop: "2px solid #1a1408", paddingTop: "24px", marginBottom: "40px" }}>
           <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#0052FF", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "16px" }}>
-            — {locale === "tr" ? "AI Agent'lar için" : "For AI Agents"}
+            — For AI Agents
           </div>
           <p style={{ fontFamily: "'Georgia', serif", fontSize: "14px", color: "#4a3a1c", lineHeight: 1.7, marginBottom: "16px" }}>
-            {locale === "tr"
-              ? "Base Daily Brief, x402 protokolü üzerinden makine-okunur bir API sunar. Agent'lar tarayıcı veya kullanıcı arayüzüne ihtiyaç duymadan, sadece bir private key ile otomatik ödeme yapıp bülten içeriğini çekebilir."
-              : "Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required."}
+            Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required.
           </p>
 
           <div style={{ background: "#1a1408", borderRadius: "4px", padding: "16px", marginBottom: "16px", overflowX: "auto" }}>
