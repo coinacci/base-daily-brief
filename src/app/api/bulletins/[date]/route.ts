@@ -31,6 +31,9 @@ export const GET = withX402(
       price: "$0.01",
       network: "eip155:84532",
       payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+      extra: {
+        builderCode: "bc_2iax4m4l",
+      },
     },
     description: "Base Daily Brief — Günlük bülten erişimi",
     mimeType: "application/json",
