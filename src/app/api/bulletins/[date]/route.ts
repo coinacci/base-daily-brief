@@ -6,25 +6,13 @@ import { ExactEvmScheme } from "@x402/evm/exact/server";
 
 export const dynamic = "force-dynamic";
 
-const isMainnet = process.env.NODE_ENV === "production";
-
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: isMainnet
-    ? "https://api.cdp.coinbase.com/platform/v2/x402"
-    : "https://x402.org/facilitator",
-  ...(isMainnet && {
-    apiKeyId: process.env.CDP_API_KEY_ID,
-    apiKeySecret: process.env.CDP_API_KEY_SECRET,
-  }),
+  url: "https://x402.org/facilitator",
 });
 
 const server = new x402ResourceServer(facilitatorClient);
-
-if (isMainnet) {
-  server.register("eip155:8453", new ExactEvmScheme());
-} else {
-  server.register("eip155:84532", new ExactEvmScheme());
-}
+server.register("eip155:8453", new ExactEvmScheme());
+server.register("eip155:84532", new ExactEvmScheme());
 
 const handler = async (req: NextRequest): Promise<NextResponse> => {
   const url = new URL(req.url);
@@ -39,15 +27,22 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
 export const GET = withX402(
   handler,
   {
-    accepts: {
-      scheme: "exact",
-      price: "$0.01",
-      network: isMainnet ? "eip155:8453" : "eip155:84532",
-      payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
-      extra: {
-        builderCode: "bc_2iax4m4l",
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.01",
+        network: "eip155:8453",
+        payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+        extra: { builderCode: "bc_2iax4m4l" },
       },
-    },
+      {
+        scheme: "exact",
+        price: "$0.01",
+        network: "eip155:84532",
+        payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+        extra: { builderCode: "bc_2iax4m4l" },
+      },
+    ],
     description: "Base Daily Brief — Günlük bülten erişimi",
     mimeType: "application/json",
   },
