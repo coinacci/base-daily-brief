@@ -123,10 +123,10 @@ export default function HomePage() {
             <pre style={{ fontFamily: "monospace", fontSize: "11px", color: "#f0e4c0", margin: 0, lineHeight: 1.7 }}>{`# Endpoint
 GET https://basedailybrief.vercel.app/api/bulletins/{date}?locale=en
 
-# Test: 402 dönmeli (ödeme gerekli)
+# Test: should return 402 (payment required)
 curl -I https://basedailybrief.vercel.app/api/bulletins/2026-08-13
 
-# x402-fetch ile otomatik ödeme (Node.js)
+# Automatic payment with x402-fetch (Node.js)
 import { wrapFetchWithPayment } from "@x402/fetch";
 import { x402Client } from "@x402/core/client";
 import { registerExactEvmScheme } from "@x402/evm/exact/client";
