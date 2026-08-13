@@ -12,21 +12,32 @@ const NETWORK = (process.env.X402_NETWORK ?? "eip155:8453") as `${string}:${stri
 const server = createX402Server();
 
 const handler = async (req: NextRequest): Promise<NextResponse> => {
-  // Ödeme başarılı — API key oluştur
   const apiKey = crypto.randomUUID();
-
-  // Payer adresini header'dan al
   const payerAddress = req.headers.get("x-payment-sender") ?? "unknown";
 
-  // Redis'e kaydet
-  const subscription = await saveSubscription(apiKey, payerAddress, SUBSCRIBE_DAYS);
+  // callbackUrl opsiyonel — body'den al
+  let callbackUrl: string | undefined;
+  try {
+    const body = await req.json();
+    if (body?.callbackUrl) {
+      const url = new URL(body.callbackUrl);
+      if (url.protocol === "https:") {
+        callbackUrl = body.callbackUrl;
+      }
+    }
+  } catch {}
+
+  const subscription = await saveSubscription(apiKey, payerAddress, SUBSCRIBE_DAYS, callbackUrl);
 
   return NextResponse.json({
     apiKey,
     expiresAt: new Date(subscription.expiresAt).toISOString(),
     days: SUBSCRIBE_DAYS,
-    usage: "Add X-API-Key header to /api/bulletins/{date} requests",
     dailyLimit: parseInt(process.env.SUBSCRIBE_DAILY_LIMIT ?? "5"),
+    webhook: callbackUrl
+      ? { registered: true, callbackUrl }
+      : { registered: false, hint: "POST with { callbackUrl: 'https://...' } to receive daily bulletins" },
+    usage: "Add X-API-Key header to /api/bulletins/{date} requests",
   });
 };
 
@@ -40,7 +51,7 @@ export const POST = withX402(
       payTo: PAY_TO,
       extra: { builderCode: "bc_2iax4m4l" },
     },
-    description: `Base Daily Brief — ${SUBSCRIBE_DAYS} günlük abonelik`,
+    description: `Base Daily Brief — ${SUBSCRIBE_DAYS}-day subscription`,
     mimeType: "application/json",
   },
   server

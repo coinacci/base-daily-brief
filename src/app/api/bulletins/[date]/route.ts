@@ -12,7 +12,7 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
   const url = new URL(req.url);
   const parts = url.pathname.split("/");
   const date = parts[parts.length - 1];
-  const locale = (url.searchParams.get("locale") ?? "tr") as Locale;
+  const locale = (url.searchParams.get("locale") ?? "en") as Locale;
   const bulletin = getBulletin(date, locale);
   if (!bulletin) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(bulletin);
@@ -21,27 +21,35 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
 async function GET(req: NextRequest): Promise<NextResponse> {
   const apiKey = req.headers.get("x-api-key");
 
-  // API key varsa subscription kontrolü yap
   if (apiKey) {
     const subscription = await getSubscription(apiKey);
 
     if (subscription) {
-      // Rate limit kontrolü
       const allowed = await checkRateLimit(apiKey);
       if (!allowed) {
+        // Retry-After: gece yarısı UTC'ye kadar kalan saniye
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setUTCHours(24, 0, 0, 0);
+        const retryAfter = Math.ceil((midnight.getTime() - now.getTime()) / 1000);
+
         return NextResponse.json(
-          { error: "Daily rate limit exceeded", limit: process.env.SUBSCRIBE_DAILY_LIMIT ?? "5" },
-          { status: 429 }
+          {
+            error: "Daily rate limit exceeded",
+            limit: process.env.SUBSCRIBE_DAILY_LIMIT ?? "5",
+            retryAfter,
+            resetsAt: midnight.toISOString(),
+          },
+          {
+            status: 429,
+            headers: { "Retry-After": String(retryAfter) },
+          }
         );
       }
-
-      // Geçerli subscription — x402'yi bypass et
       return handler(req);
     }
-    // Geçersiz/süresi dolmuş key — x402 akışına düş
   }
 
-  // x402 ile koru
   return withX402(
     handler,
     {
@@ -52,7 +60,7 @@ async function GET(req: NextRequest): Promise<NextResponse> {
         payTo: x402Config.payTo,
         extra: { builderCode: x402Config.builderCode },
       },
-      description: "Base Daily Brief — Günlük bülten erişimi",
+      description: "Base Daily Brief — Daily bulletin access",
       mimeType: "application/json",
     },
     server
