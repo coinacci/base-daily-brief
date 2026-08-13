@@ -19,6 +19,7 @@
     "@x402/next": "latest",
     "@x402/paywall": "^2.22.0",
     "next": "16.3.0",
+    "ox": "^1.6.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "x402-next": "latest"
