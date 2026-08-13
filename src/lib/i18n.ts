@@ -1,6 +1,6 @@
 export type Locale = "tr" | "en";
 
-export const defaultLocale: Locale = "tr";
+export const defaultLocale: Locale = "en";
 
 export const translations = {
   tr: {
