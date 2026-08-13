@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: "Base ekosisteminden süzülmüş, kaynaklı günlük özetler.",
   other: {
     "base:app_id": "6a7d7123ff2c2a5c4a672477",
+    "base:builder_code": "bc_2iax4m4l",
   },
 };
 
