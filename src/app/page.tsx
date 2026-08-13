@@ -70,7 +70,7 @@ export default function HomePage() {
                 href={`/bulletin/${latest.date}`}
                 style={{ display: "inline-block", fontFamily: "monospace", fontSize: "11px", color: "#8b6914", border: "0.5px solid #c8a84a", padding: "8px 16px", letterSpacing: "0.06em", textDecoration: "none", background: "#f0e4c0" }}
               >
-                {locale === "tr" ? "🔒 Devamını oku — x402 ile öde" : "🔒 Read more — Pay with x402"}
+                {locale === "tr" ? "🔒 Devamını oku — $0.01 USDC öde" : "🔒 Read more — Pay $0.01 USDC"}
               </Link>
             </div>
 
@@ -96,7 +96,7 @@ export default function HomePage() {
                         href={`/bulletin/${b.date}`}
                         style={{ fontFamily: "monospace", fontSize: "10px", color: "#8b6914", textDecoration: "none", letterSpacing: "0.05em" }}
                       >
-                        {locale === "tr" ? "🔒 Oku — x402 ile öde" : "🔒 Read — Pay with x402"}
+                        {locale === "tr" ? "🔒 Oku — $0.01 USDC öde" : "🔒 Read — Pay $0.01 USDC"}
                       </Link>
                     </li>
                   ))}
