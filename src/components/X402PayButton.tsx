@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useConnect, useAccount, useDisconnect, useConnectors, useWalletClient } from "wagmi";
 import { createWalletClient, custom } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
 import { registerExactEvmScheme } from "@x402/evm/exact/client";
 
@@ -24,13 +24,8 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
   const [evmAddress, setEvmAddress] = useState<string | null>(null);
-  const [network, setNetwork] = useState<"mainnet" | "testnet">("mainnet");
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
-
-  const targetChain = network === "mainnet" ? base : baseSepolia;
-  const targetChainHex = network === "mainnet" ? "0x2105" : "0x14A34";
-  const targetChainId = network === "mainnet" ? base.id : baseSepolia.id;
 
   async function handleEVMConnect() {
     if (typeof window === "undefined" || !window.ethereum) {
@@ -45,37 +40,24 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     }
   }
 
-  async function switchChain(ethereum: any) {
+  async function switchToBase(ethereum: any) {
     try {
       await ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: targetChainHex }],
+        params: [{ chainId: "0x2105" }],
       });
     } catch (e: any) {
       if (e.code === 4902) {
-        if (network === "mainnet") {
-          await ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [{
-              chainId: "0x2105",
-              chainName: "Base",
-              nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://mainnet.base.org"],
-              blockExplorerUrls: ["https://basescan.org"],
-            }],
-          });
-        } else {
-          await ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [{
-              chainId: "0x14A34",
-              chainName: "Base Sepolia",
-              nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://base-sepolia.g.alchemy.com/v2/demo"],
-              blockExplorerUrls: ["https://sepolia.basescan.org"],
-            }],
-          });
-        }
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: "0x2105",
+            chainName: "Base",
+            nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+            rpcUrls: ["https://mainnet.base.org"],
+            blockExplorerUrls: ["https://basescan.org"],
+          }],
+        });
       }
     }
   }
@@ -84,14 +66,12 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     setPaying(true);
     setError("");
     try {
-      await switchChain(ethereum);
-
+      await switchToBase(ethereum);
       const wallet = createWalletClient({
         account: addr as `0x${string}`,
-        chain: targetChain,
+        chain: base,
         transport: custom(ethereum),
       });
-
       const signer = {
         address: addr as `0x${string}`,
         signTypedData: async (params: any) =>
@@ -103,11 +83,9 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
             message: params.message,
           }),
       };
-
       const client = new x402Client();
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
-
       const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`);
       if (res.ok) {
         const data = await res.json();
@@ -128,10 +106,9 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     setPaying(true);
     setError("");
     try {
-      if (chainId !== targetChainId && window.ethereum) {
-        await switchChain(window.ethereum);
+      if (chainId !== base.id && window.ethereum) {
+        await switchToBase(window.ethereum);
       }
-
       const signer = {
         address,
         signTypedData: async (params: any) =>
@@ -143,11 +120,9 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
             message: params.message,
           }),
       };
-
       const client = new x402Client();
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
-
       const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`);
       if (res.ok) {
         const data = await res.json();
@@ -163,27 +138,9 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     }
   }
 
-  const networkToggle = (
-    <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "20px" }}>
-      <button
-        onClick={() => setNetwork("mainnet")}
-        style={{ fontFamily: "monospace", fontSize: "10px", padding: "4px 12px", border: "0.5px solid", borderColor: network === "mainnet" ? "#1a1408" : "#c8bfa8", background: network === "mainnet" ? "#1a1408" : "transparent", color: network === "mainnet" ? "#f5f0e8" : "#7a6f5a", cursor: "pointer", letterSpacing: "0.05em" }}
-      >
-        Base Mainnet
-      </button>
-      <button
-        onClick={() => setNetwork("testnet")}
-        style={{ fontFamily: "monospace", fontSize: "10px", padding: "4px 12px", border: "0.5px solid", borderColor: network === "testnet" ? "#1a1408" : "#c8bfa8", background: network === "testnet" ? "#1a1408" : "transparent", color: network === "testnet" ? "#f5f0e8" : "#7a6f5a", cursor: "pointer", letterSpacing: "0.05em" }}
-      >
-        Sepolia (test)
-      </button>
-    </div>
-  );
-
   if (evmAddress) {
     return (
       <div style={{ textAlign: "center" }}>
-        {networkToggle}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
           <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
             {`${evmAddress.slice(0, 6)}...${evmAddress.slice(-4)}`}
@@ -207,7 +164,6 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
   if (isConnected && address) {
     return (
       <div style={{ textAlign: "center" }}>
-        {networkToggle}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
           <span style={{ fontFamily: "monospace", fontSize: "12px", color: "#7a6f5a" }}>
             {`${address.slice(0, 6)}...${address.slice(-4)}`}
@@ -230,7 +186,6 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {networkToggle}
       <p style={{ fontFamily: "monospace", fontSize: "11px", color: "#7a6f5a", marginBottom: "20px", letterSpacing: "0.05em" }}>
         {locale === "tr" ? "Cüzdanını bağla ve ödeme yap" : "Connect your wallet to pay"}
       </p>

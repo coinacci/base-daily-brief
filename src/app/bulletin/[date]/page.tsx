@@ -78,7 +78,7 @@ export default function BulletinDetailPage() {
 
             <div style={{ display: "inline-block", border: "1.5px solid #1a1408", padding: "16px 32px", marginBottom: "32px" }}>
               <div style={{ fontFamily: "monospace", fontSize: "22px", fontWeight: 700, color: "#1a1408" }}>$0.01</div>
-              <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginTop: "4px" }}>USDC · Base Sepolia</div>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", marginTop: "4px" }}>USDC · Base Mainnet</div>
             </div>
 
             <X402PayButton
