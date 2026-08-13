@@ -1,45 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import { useLanguage } from "@/lib/LanguageContext";
 import type { Locale } from "@/lib/bulletins";
 
 export default function AdminPage() {
-  const { t } = useLanguage();
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [locale, setLocale] = useState<Locale>("tr");
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
+  const [errMsg, setErrMsg] = useState("");
 
   async function handleSubmit() {
     setStatus("idle");
+    setErrMsg("");
     const res = await fetch("/api/admin/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password, date, title, content, locale }),
+      body: JSON.stringify({ password, date, title, summary, content, locale }),
     });
-    setStatus(res.ok ? "ok" : "err");
+    const data = await res.json();
+    if (res.ok) {
+      setStatus("ok");
+    } else {
+      setStatus("err");
+      setErrMsg(data.error || "Hata oluştu");
+    }
   }
 
   if (!authed) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center px-4">
-        <div className="w-full max-w-sm space-y-4">
-          <h1 className="text-xl font-semibold">Admin</h1>
+      <main style={{ background: "#f5f0e8", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+        <div style={{ width: "100%", maxWidth: "360px" }}>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 900, color: "#1a1408", marginBottom: "24px" }}>Admin</h1>
           <input
             type="password"
             placeholder="Şifre"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && setAuthed(true)}
-            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
+            style={{ width: "100%", fontFamily: "monospace", fontSize: "13px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "10px 14px", marginBottom: "12px", outline: "none", boxSizing: "border-box" }}
           />
           <button
             onClick={() => setAuthed(true)}
-            className="w-full rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2.5 text-sm font-medium transition"
+            style={{ width: "100%", fontFamily: "monospace", fontSize: "12px", border: "1px solid #1a1408", background: "#1a1408", color: "#f5f0e8", padding: "10px", cursor: "pointer", letterSpacing: "0.06em" }}
           >
             Giriş
           </button>
@@ -49,25 +56,30 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 px-4 py-10">
-      <div className="mx-auto max-w-2xl space-y-5">
-        <h1 className="text-2xl font-semibold">{t("adminTitle")}</h1>
+    <main style={{ background: "#f5f0e8", minHeight: "100vh", fontFamily: "Georgia, serif", color: "#2a2010", padding: "2rem 1.5rem" }}>
+      <div style={{ maxWidth: "720px", margin: "0 auto" }}>
 
-        <div className="flex gap-3">
-          <div className="flex-1 space-y-1">
-            <label className="text-xs text-zinc-400">{t("adminDate")}</label>
+        <div style={{ borderTop: "2.5px solid #1a1408", borderBottom: "2.5px solid #1a1408", padding: "6px 0", textAlign: "center", marginBottom: "32px" }}>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 900, color: "#1a1408", margin: 0 }}>
+            Base Daily Brief — Admin
+          </h1>
+        </div>
+
+        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Tarih</label>
             <input
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
+              style={{ width: "100%", fontFamily: "monospace", fontSize: "13px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "8px 12px", outline: "none", boxSizing: "border-box" }}
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs text-zinc-400">{t("adminLocale")}</label>
+          <div>
+            <label style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Dil</label>
             <select
               value={locale}
               onChange={(e) => setLocale(e.target.value as Locale)}
-              className="rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500 h-[42px]"
+              style={{ fontFamily: "monospace", fontSize: "13px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "8px 12px", outline: "none", height: "38px" }}
             >
               <option value="tr">Türkçe</option>
               <option value="en">English</option>
@@ -75,34 +87,53 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="space-y-1">
-          <label className="text-xs text-zinc-400">{t("adminTitleLabel")}</label>
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Başlık</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500"
+            style={{ width: "100%", fontFamily: "Georgia, serif", fontSize: "16px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "8px 12px", outline: "none", boxSizing: "border-box" }}
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-xs text-zinc-400">{t("adminContent")}</label>
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Özet (Ana sayfada gösterilir)</label>
+          <textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            rows={3}
+            style={{ width: "100%", fontFamily: "Georgia, serif", fontSize: "14px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "8px 12px", outline: "none", resize: "vertical", boxSizing: "border-box", fontStyle: "italic" }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "24px" }}>
+          <label style={{ fontFamily: "monospace", fontSize: "10px", color: "#7a6f5a", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>İçerik (Markdown)</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            rows={16}
-            className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-500 font-mono resize-none"
+            rows={24}
+            style={{ width: "100%", fontFamily: "monospace", fontSize: "13px", border: "0.5px solid #c8bfa8", background: "#faf7f2", padding: "8px 12px", outline: "none", resize: "vertical", boxSizing: "border-box", lineHeight: 1.6 }}
           />
         </div>
 
         <button
           onClick={handleSubmit}
-          className="rounded-lg bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-sm font-medium transition"
+          style={{ fontFamily: "monospace", fontSize: "12px", border: "1px solid #1a1408", background: "#1a1408", color: "#f5f0e8", padding: "12px 24px", cursor: "pointer", letterSpacing: "0.08em" }}
         >
-          {t("adminSave")}
+          GitHub'a Kaydet & Yayınla
         </button>
 
-        {status === "ok" && <p className="text-sm text-green-400">{t("adminSuccess")}</p>}
-        {status === "err" && <p className="text-sm text-red-400">{t("adminError")}</p>}
+        {status === "ok" && (
+          <p style={{ fontFamily: "monospace", fontSize: "12px", color: "#2d6a4f", marginTop: "12px" }}>
+            ✓ Bülten GitHub'a kaydedildi. Vercel ~1 dk içinde yayınlar.
+          </p>
+        )}
+        {status === "err" && (
+          <p style={{ fontFamily: "monospace", fontSize: "12px", color: "#c0392b", marginTop: "12px" }}>
+            ✗ {errMsg}
+          </p>
+        )}
+
       </div>
     </main>
   );
