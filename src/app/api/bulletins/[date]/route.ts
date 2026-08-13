@@ -16,11 +16,15 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
   const bulletin = getBulletin(date, locale);
   if (!bulletin) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Ödeme başarılı — cüzdan adresini al ve Redis'e kaydet
-  const payerAddress = req.headers.get("x-payment-sender") ??
-    req.headers.get("x-payer") ?? "";
+  // Cüzdan adresini hem x-payment-sender hem x-wallet-address'ten al
+  const payerAddress =
+    req.headers.get("x-payment-sender") ??
+    req.headers.get("x-payer") ??
+    req.headers.get("x-wallet-address") ??
+    "";
+
   if (payerAddress) {
-    await markBulletinPaid(payerAddress, date);
+    await markBulletinPaid(payerAddress, date).catch(() => {});
   }
 
   return NextResponse.json(bulletin);
@@ -51,7 +55,7 @@ async function GET(req: NextRequest): Promise<NextResponse> {
     }
   }
 
-  // 2. Günlük ödeme cache kontrolü — cüzdan adresi header'dan
+  // 2. Günlük ödeme cache kontrolü
   const walletAddress = req.headers.get("x-wallet-address") ?? "";
   if (walletAddress) {
     const paid = await isBulletinPaid(walletAddress, date);
