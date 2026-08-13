@@ -4,7 +4,7 @@ import { createFacilitatorConfig } from "@coinbase/x402";
 
 const PAY_TO = process.env.X402_PAY_TO ?? "0x33661B8496075c3b8b2B69CB3E03BC3436808d78";
 const PRICE = process.env.X402_PRICE ?? "0.01";
-const NETWORK = process.env.X402_NETWORK ?? "eip155:8453";
+const NETWORK = (process.env.X402_NETWORK ?? "eip155:8453") as `${string}:${string}`;
 const BUILDER_CODE = "bc_2iax4m4l";
 
 function createFacilitator() {
@@ -12,12 +12,10 @@ function createFacilitator() {
   const keySecret = process.env.CDP_API_KEY_SECRET;
 
   if (keyId && keySecret) {
-    // CDP facilitator — production
     const config = createFacilitatorConfig(keyId, keySecret);
     return new HTTPFacilitatorClient(config);
   }
 
-  // Public facilitator — fallback
   return new HTTPFacilitatorClient({
     url: "https://x402.org/facilitator",
   });
@@ -32,7 +30,7 @@ export function createX402Server() {
 
 export const x402Config = {
   payTo: PAY_TO,
-  price: `$${PRICE}`,
+  price: `$${PRICE}` as const,
   network: NETWORK,
   builderCode: BUILDER_CODE,
 };
