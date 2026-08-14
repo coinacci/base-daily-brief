@@ -99,7 +99,7 @@ export default function HomePage() {
               {archive.length > 0 && (
                 <div style={{ marginBottom: "24px" }}>
                   <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
-                    {locale === "tr" ? "Arşiv" : "Archive"} ({archive.length})
+                    {locale === "tr" ? "Önceki Bültenler" : "Previous Bulletins"} ({archive.length})
                   </div>
                   <div style={{ maxHeight: "300px", overflowY: "auto" }}>
                     {archive.map((b, i) => (
