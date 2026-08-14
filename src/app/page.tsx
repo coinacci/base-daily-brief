@@ -10,7 +10,6 @@ export default function HomePage() {
   const { locale, t } = useLanguage();
   const [bulletins, setBulletins] = useState<BulletinMeta[]>([]);
   const [loading, setLoading] = useState(true);
-  const [archiveOpen, setArchiveOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -22,188 +21,160 @@ export default function HomePage() {
   const latest = bulletins[0] ?? null;
   const archive = bulletins.slice(1);
 
-  const s = {
-    topbar: { borderTop: "3px solid var(--text-primary)", borderBottom: "1px solid var(--border-strong)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", marginBottom: "10px" } as React.CSSProperties,
-    toplabel: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--text-secondary)" },
-    masthead: { textAlign: "center" as const, borderBottom: "2px solid var(--text-primary)", paddingBottom: "8px", marginBottom: "8px" },
-    masttitle: { fontFamily: "Georgia, serif", fontSize: "42px", fontWeight: 900, letterSpacing: "-1px", lineHeight: 1, color: "var(--text-primary)" },
-    tagline: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: "var(--text-secondary)", letterSpacing: "0.06em", marginTop: "4px" },
-    meta: { display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "5px 0", marginBottom: "16px" },
-    metaspan: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: "var(--text-secondary)", letterSpacing: "0.04em" },
-    sectionLabel: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" },
-    headline: { fontFamily: "Georgia, serif", fontSize: "26px", fontWeight: 900, lineHeight: 1.2, color: "var(--text-primary)", marginBottom: "8px" },
-    subhead: { fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "italic" as const, color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: "10px" },
-    byline: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", fontWeight: 500, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase" as const, marginBottom: "10px" },
-    fadeWrap: { position: "relative" as const },
-    body: { fontFamily: "Georgia, serif", fontSize: "13px", lineHeight: 1.7, color: "var(--text-primary)", marginBottom: "8px" },
-    fade: { position: "absolute" as const, bottom: 0, left: 0, right: 0, height: "70px", background: "linear-gradient(to bottom, transparent, var(--surface-2))", pointerEvents: "none" as const },
-    paywallBox: { border: "1px solid var(--border-strong)", padding: "16px", marginTop: "14px", textAlign: "center" as const, background: "var(--surface-1)" },
-    paywallHead: { fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" },
-    paywallSub: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "12px" },
-    payBtn: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", fontWeight: 500, background: "var(--text-primary)", color: "var(--surface-2)", padding: "8px 20px", letterSpacing: "0.06em", cursor: "pointer", border: "none", display: "inline-block", marginBottom: "6px" },
-    paywallNote: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.04em" },
-    dividerV: { background: "var(--border-strong)", margin: "0 16px" },
-    archiveHead: { fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 600, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "5px" },
-    archiveSummary: { fontFamily: "Georgia, serif", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.55, fontStyle: "italic" as const },
-    archiveDate: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "4px" },
-    footer: { borderTop: "2px solid var(--text-primary)", borderBottom: "1px solid var(--border)", padding: "6px 0", marginTop: "16px", display: "flex", justifyContent: "space-between" },
-    footerSpan: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", color: "var(--text-secondary)", letterSpacing: "0.05em" },
-    footerAccent: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", color: "var(--text-accent)", letterSpacing: "0.05em" },
-    agentsBox: { borderTop: "2px solid var(--text-primary)", paddingTop: "20px", marginTop: "4px" },
-    agentsLabel: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "9px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" },
-    agentsHead: { fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" },
-    agentsBody: { fontFamily: "Georgia, serif", fontSize: "13px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "14px" },
-    codeBox: { background: "var(--surface-0)", border: "0.5px solid var(--border-strong)", padding: "14px", marginBottom: "12px", overflowX: "auto" as const },
-    code: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: "var(--text-primary)", margin: 0, lineHeight: 1.7 },
-    links: { display: "flex", gap: "16px", flexWrap: "wrap" as const },
-    link: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: "var(--text-accent)", textDecoration: "none", letterSpacing: "0.05em" },
-    linkMuted: { fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.05em" },
-  };
-
   return (
     <main style={{ background: "var(--surface-2)", minHeight: "100vh", color: "var(--text-primary)" }}>
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem 1.5rem" }}>
 
         {/* Top bar */}
-        <div style={s.topbar}>
-          <span style={s.toplabel}>Base Ecosystem · Agent-Native · x402</span>
+        <div style={{ borderTop: "3px solid var(--text-primary)", borderBottom: "1px solid var(--border-strong)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", marginBottom: "10px" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)" }}>Base Ecosystem · Agent-Native · x402</span>
           <LanguageSwitcher />
-          <span style={s.toplabel}>
+          <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)" }}>
             {new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}
           </span>
         </div>
 
         {/* Masthead */}
-        <div style={s.masthead}>
-          <div style={s.masttitle}>Base Daily Brief</div>
-          <div style={s.tagline}>
-            {locale === "tr"
-              ? "Base ekosisteminden süzülmüş, kaynaklı günlük özetler. Finansal tavsiye içermez."
-              : "Curated intelligence from the Base ecosystem. Not financial advice."}
+        <div style={{ textAlign: "center", borderBottom: "2px solid var(--text-primary)", paddingBottom: "8px", marginBottom: "8px" }}>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: "44px", fontWeight: 900, letterSpacing: "-1px", lineHeight: 1, color: "var(--text-primary)" }}>Base Daily Brief</div>
+          <div style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)", letterSpacing: "0.06em", marginTop: "6px" }}>
+            {locale === "tr" ? "Base ekosisteminden süzülmüş, kaynaklı günlük özetler. Finansal tavsiye içermez." : "Curated intelligence from the Base ecosystem. Not financial advice."}
           </div>
         </div>
 
-        {/* Meta */}
         {!loading && latest && (
-          <div style={s.meta}>
-            <span style={s.metaspan}>{latest.summary?.slice(0, 80)}...</span>
-            <span style={s.metaspan}>$0.01 USDC / issue</span>
+          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--border)", padding: "5px 0", marginBottom: "16px" }}>
+            <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)" }}>{latest.summary?.slice(0, 90)}...</span>
+            <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "12px" }}>$0.01 USDC / issue</span>
           </div>
         )}
 
         {loading ? (
-          <p style={s.toplabel}>...</p>
+          <p style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-muted)" }}>...</p>
         ) : latest ? (
           <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1px 1.2fr", gap: 0 }}>
 
             {/* Sol: Son bülten */}
-            <div>
-              <div style={s.sectionLabel}>
+            <div style={{ paddingRight: "20px" }}>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
                 {locale === "tr" ? "Son bülten" : "Latest bulletin"}
               </div>
-              <div style={s.headline}>{latest.title}</div>
-              {latest.summary && (
-                <div style={s.subhead}>{latest.summary}</div>
-              )}
-              <div style={s.byline}>
-                Base Daily Brief · {latest.date} · {locale === "tr" ? "Manuel derlenir" : "Manually curated"}
-              </div>
 
-              <div style={s.fadeWrap}>
-                <div style={s.body}>
-                  {locale === "tr"
-                    ? "Base ekosistemindeki en önemli gelişmeleri, kaynakları ve analizleri bir araya getirdik. Ödeme yaparak tüm haberlere, istatistiklere ve agent ekonomisine dair notlara ulaşabilirsiniz."
-                    : "We've gathered the most important developments, sources, and analysis from the Base ecosystem. Pay to access full coverage including stats, launches, and agent economy notes."}
+              {/* Bülten kartı */}
+              <div style={{ border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "14px" }}>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 900, lineHeight: 1.2, color: "var(--text-primary)", marginBottom: "10px" }}>{latest.title}</div>
+                {latest.summary && (
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "italic", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "10px", borderBottom: "0.5px solid var(--border)", paddingBottom: "10px" }}>{latest.summary}</div>
+                )}
+                <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "12px" }}>
+                  Base Daily Brief · {latest.date} · {locale === "tr" ? "Manuel derlenir" : "Manually curated"}
                 </div>
-                <div style={s.fade}></div>
-              </div>
-
-              <div style={s.paywallBox}>
-                <div style={s.paywallHead}>
-                  {locale === "tr" ? "Tüm bülteni oku" : "Continue reading this bulletin"}
-                </div>
-                <div style={s.paywallSub}>
-                  {locale === "tr"
-                    ? "Haberler · Kaynaklar · İstatistikler · Agent & x402 notları"
-                    : "Full coverage · Sources · Stats · Agent & x402 notes"}
-                </div>
-                <Link href={`/bulletin/${latest.date}`} style={{ textDecoration: "none" }}>
-                  <div style={s.payBtn}>
-                    {locale === "tr" ? "Oku — $0.01 USDC öde →" : "Pay $0.01 USDC to read →"}
+                <div style={{ position: "relative" }}>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.7, color: "var(--text-primary)" }}>
+                    {locale === "tr"
+                      ? "Base ekosistemindeki en önemli gelişmeleri, kaynakları ve analizleri bir araya getirdik. Ödeme yaparak tüm haberlere, istatistiklere ve agent ekonomisine dair notlara ulaşabilirsiniz."
+                      : "We've gathered the most important developments, sources, and analysis from the Base ecosystem. Pay to access full coverage including stats, launches, and agent economy notes."}
                   </div>
-                </Link>
-                <div style={s.paywallNote}>
-                  {locale === "tr"
-                    ? "Bugün bir kez öde · Gün boyu geçerli · Base Mainnet · x402"
-                    : "One payment · Valid all day · Base Mainnet · x402 protocol"}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "60px", background: "linear-gradient(to bottom, transparent, var(--surface-2))", pointerEvents: "none" }}></div>
                 </div>
+              </div>
+
+              {/* CTA butonu */}
+              <Link href={`/bulletin/${latest.date}`} style={{ textDecoration: "none", display: "block" }}>
+                <div style={{ background: "var(--text-primary)", color: "var(--surface-2)", fontFamily: "Georgia, serif", fontSize: "16px", fontWeight: 700, padding: "14px 20px", textAlign: "center", letterSpacing: "0.02em", cursor: "pointer" }}>
+                  {locale === "tr" ? "Bülteni Oku — $0.01 USDC Öde →" : "Read Bulletin — Pay $0.01 USDC →"}
+                </div>
+              </Link>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", textAlign: "center", marginTop: "6px", letterSpacing: "0.04em" }}>
+                {locale === "tr" ? "Bugün bir kez öde · Gün boyu geçerli · Base Mainnet · x402" : "One payment · Valid all day · Base Mainnet · x402 protocol"}
               </div>
             </div>
 
             {/* Dikey ayırıcı */}
-            <div style={s.dividerV}></div>
+            <div style={{ background: "var(--border-strong)", margin: "0" }}></div>
 
             {/* Sağ: Arşiv + Agents */}
-            <div style={{ paddingLeft: "0" }}>
-              {archive.length > 0 && (
-                <div style={{ marginBottom: "20px" }}>
-                  <button
-                    onClick={() => setArchiveOpen(!archiveOpen)}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", padding: "0 0 4px 0" }}
-                  >
-                    <span style={s.sectionLabel}>{locale === "tr" ? "Arşiv" : "Archive"} ({archive.length})</span>
-                    <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>{archiveOpen ? "▲" : "▼"}</span>
-                  </button>
+            <div style={{ paddingLeft: "20px" }}>
 
-                  {archiveOpen && (
-                    <ul style={{ listStyle: "none", padding: 0, margin: "8px 0 0 0" }}>
-                      {archive.map((b) => (
-                        <li key={b.date} style={{ borderBottom: "0.5px solid var(--border)", paddingBottom: "12px", marginBottom: "12px" }}>
-                          <Link href={`/bulletin/${b.date}`} style={{ textDecoration: "none" }}>
-                            <div style={s.archiveHead}>{b.title}</div>
-                            {b.summary && <div style={s.archiveSummary}>{b.summary}</div>}
-                            <div style={s.archiveDate}>{b.date} · $0.01 USDC</div>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+              {/* Arşiv — kaydırılabilir */}
+              {archive.length > 0 && (
+                <div style={{ marginBottom: "24px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
+                    {locale === "tr" ? "Arşiv" : "Archive"} ({archive.length})
+                  </div>
+                  <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border)", padding: "8px" }}>
+                    {archive.map((b) => (
+                      <Link key={b.date} href={`/bulletin/${b.date}`} style={{ textDecoration: "none", display: "block" }}>
+                        <div style={{ paddingBottom: "12px", marginBottom: "12px", borderBottom: "0.5px solid var(--border)" }}>
+                          <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "4px" }}>{b.title}</div>
+                          {b.summary && <div style={{ fontFamily: "Georgia, serif", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5, fontStyle: "italic", marginBottom: "4px" }}>{b.summary}</div>}
+                          <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>{b.date} · $0.01 USDC</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* For AI Agents */}
-              <div style={s.agentsBox}>
-                <div style={s.agentsLabel}>For AI Agents</div>
-                <div style={s.agentsHead}>Machine-readable API via x402</div>
-                <div style={s.agentsBody}>
-                  Agents pay autonomously with a private key — no browser required. $0.01 USDC per call or $0.25 for 30-day subscription.
+              <div style={{ borderTop: "2px solid var(--text-primary)", paddingTop: "16px" }}>
+                <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+                  For AI Agents
                 </div>
-                <div style={s.codeBox}>
-                  <pre style={s.code}>{`GET /api/bulletins/{date}?locale=en
-# Returns 402 → sign → 200 + content
+                <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" }}>
+                  Machine-readable API via x402
+                </div>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: "13px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "12px" }}>
+                  Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required.
+                </div>
+                <div style={{ background: "var(--surface-0)", border: "0.5px solid var(--border-strong)", padding: "12px", marginBottom: "10px", overflowX: "auto" }}>
+                  <pre style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-primary)", margin: 0, lineHeight: 1.7 }}>{`# Endpoint
+GET /api/bulletins/{date}?locale=en
 
+# Test: should return 402
+curl -I https://basedailybrief.vercel.app/api/bulletins/2026-08-13
+
+# Pay with x402-fetch (Node.js)
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { x402Client } from "@x402/core/client";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(process.env.PRIVATE_KEY);
+const client = new x402Client();
+registerExactEvmScheme(client, { signer });
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
+
 const res = await fetchWithPay(
   "https://basedailybrief.vercel.app/api/bulletins/2026-08-13?locale=en"
-);`}</pre>
+);
+const bulletin = await res.json();
+
+# Subscribe: $0.25 for 30 days
+const sub = await fetchWithPay(
+  "https://basedailybrief.vercel.app/api/subscribe",
+  { method: "POST" }
+);
+const { apiKey } = await sub.json();
+# Use X-API-Key header — no more payments`}</pre>
                 </div>
-                <div style={s.links}>
-                  <a href="/openapi.json" style={s.link}>OpenAPI →</a>
-                  <a href="/.well-known/agent-card.json" style={s.link}>Agent card →</a>
-                  <span style={s.linkMuted}>eip155:8453 · EIP-3009</span>
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                  <a href="/openapi.json" style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", textDecoration: "none" }}>OpenAPI spec →</a>
+                  <a href="/.well-known/agent-card.json" style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", textDecoration: "none" }}>Agent card →</a>
+                  <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>$0.01 USDC · Base Mainnet · EIP-3009</span>
                 </div>
               </div>
             </div>
 
           </div>
         ) : (
-          <p style={s.toplabel}>{t("noBulletins")}</p>
+          <p style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-muted)" }}>{t("noBulletins")}</p>
         )}
 
         {/* Footer */}
-        <div style={s.footer}>
-          <span style={s.footerSpan}>{t("footerNote")}</span>
-          <span style={s.footerAccent}>BASE / 2026</span>
+        <div style={{ borderTop: "2px solid var(--text-primary)", borderBottom: "1px solid var(--border)", padding: "6px 0", marginTop: "16px", display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-secondary)", letterSpacing: "0.05em" }}>{t("footerNote")}</span>
+          <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", letterSpacing: "0.05em" }}>BASE / 2026</span>
         </div>
 
       </div>
