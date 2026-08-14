@@ -8,6 +8,7 @@ export function GET() {
     info: {
       title: "Base Daily Brief API",
       version: "1.0.0",
+    contact: { email: "yysoncul@gmail.com" },
       description: "Daily curated bulletin from the Base ecosystem. Pay per call ($0.01 USDC) or subscribe for 30 days ($0.25 USDC) via x402 protocol on Base Mainnet.",
     },
     servers: [
