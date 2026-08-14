@@ -11,6 +11,7 @@ export default function HomePage() {
   const [bulletins, setBulletins] = useState<BulletinMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [agentsOpen, setAgentsOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -64,7 +65,7 @@ export default function HomePage() {
 
             {/* Sol: Son bülten */}
             <div style={{ paddingRight: isMobile ? "0" : "20px", marginBottom: isMobile ? "24px" : "0" }}>
-              <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px", cursor: "pointer", display: "flex", justifyContent: "space-between" }} onClick={() => setAgentsOpen(!agentsOpen)}>
                 {locale === "tr" ? "Son bülten" : "Latest bulletin"}
               </div>
 
@@ -127,10 +128,10 @@ export default function HomePage() {
 
               {/* For AI Agents */}
               <div style={{ borderTop: "2px solid var(--text-primary)", paddingTop: "16px" }}>
-                <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+                <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px", cursor: "pointer", display: "flex", justifyContent: "space-between" }} onClick={() => setAgentsOpen(!agentsOpen)}>
                   For AI Agents
                 </div>
-                <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" }}>
+                {agentsOpen && <><div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" }}>
                   Machine-readable API via x402
                 </div>
                 <div style={{ fontFamily: "Georgia, serif", fontSize: "13px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "12px" }}>
