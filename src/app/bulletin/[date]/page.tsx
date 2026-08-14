@@ -48,9 +48,11 @@ function parseBulletin(content: string): ParsedBulletin {
     if (currentSection) {
       if (t.startsWith("### ")) { pushItem(); currentItem = { head: t.slice(4), source: "", quote: "", body: "", why: "" }; continue; }
       if (currentItem) {
-        if (t.startsWith("**Kaynak:**") || t.startsWith("**Source:**")) { const raw = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim(); currentItem.source = raw.replace(/\\(https?:\/\/[^)]+\\)/g, "").trim(); }
-        else if (t.startsWith("> ")) { currentItem.quote = t.slice(2); }
-        else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters")) { /* skip */ }
+        if (t.startsWith("**Kaynak:**") || t.startsWith("**Source:**")) {
+          const raw = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim();
+          currentItem.source = raw.replace(/\(https?:\/\/[^)]+\)/g, "").trim();
+        } else if (t.startsWith("> ")) { currentItem.quote = t.slice(2); }
+        else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters")) { }
         else if (t.length > 0 && !t.startsWith("#")) {
           if (t.includes("önemli") || t.includes("matters") || t.includes("relevant") || t.includes("critical") || t.includes("agent") || t.includes("x402")) {
             currentItem.why += t + " ";
@@ -65,10 +67,9 @@ function parseBulletin(content: string): ParsedBulletin {
   return { highlights, sections, sources, disclaimer };
 }
 
-const BOX: React.CSSProperties = { border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "4px" };
+const BOX: React.CSSProperties = { border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "12px" };
 const SECTION_LABEL: React.CSSProperties = { fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" };
 const ITEM_HEAD: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "16px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "5px" };
-const DIVIDER: React.CSSProperties = { borderTop: "1px solid var(--border-strong)", margin: "14px 0" };
 const ITEM_SOURCE: React.CSSProperties = { fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.05em", marginBottom: "6px" };
 const ITEM_QUOTE: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "italic", color: "var(--text-secondary)", borderLeft: "3px solid var(--border-strong)", paddingLeft: "12px", margin: "8px 0", lineHeight: 1.6 };
 const ITEM_BODY: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.75, color: "var(--text-primary)", marginBottom: "6px" };
@@ -77,7 +78,7 @@ const COL_DIV: React.CSSProperties = { background: "var(--border)", margin: "0 1
 
 function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
   return (
-    <div style={{ borderBottom: last ? "none" : "1px solid var(--border)", paddingBottom: last ? "0" : "14px", marginBottom: last ? "0" : "14px" }}>
+    <div style={{ borderBottom: last ? "none" : "1px solid var(--border)", paddingBottom: last ? "0" : "16px", marginBottom: last ? "0" : "16px" }}>
       {item.head && <div style={ITEM_HEAD}>{item.head}</div>}
       {item.source && <div style={ITEM_SOURCE}>{item.source}</div>}
       {item.quote && <div style={ITEM_QUOTE}>"{item.quote}"</div>}
@@ -208,7 +209,7 @@ export default function BulletinDetailPage() {
             {locale === "tr" ? "Öne çıkanlar" : "Today's highlights"}
           </div>
           {parsed.highlights.map((h, i) => (
-            <div key={i} style={{ fontFamily: "monospace", fontSize: "12px", color: "var(--text-primary)", padding: "4px 0", borderBottom: i === parsed.highlights.length - 1 ? "none" : "0.5px solid var(--border)", display: "flex", gap: "8px", lineHeight: 1.5 }}>
+            <div key={i} style={{ fontFamily: "monospace", fontSize: "12px", color: "var(--text-primary)", padding: "5px 0", borderBottom: i === parsed.highlights.length - 1 ? "none" : "0.5px solid var(--border)", display: "flex", gap: "8px", lineHeight: 1.5 }}>
               <span style={{ color: "var(--text-accent)", flexShrink: 0 }}>▸</span>{h}
             </div>
           ))}
@@ -216,21 +217,21 @@ export default function BulletinDetailPage() {
       )}
 
       {newsSec.map((sec, si) => (
-        <div key={si} style={{ ...BOX, marginBottom: "12px" }}>
+        <div key={si} style={BOX}>
           <div style={SECTION_LABEL}>{sec.label}</div>
           {sec.items.length === 3 ? (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr 0.5px 1fr", gap: 0 }}>
-              <RenderItem item={sec.items[0]} />
+              <RenderItem item={sec.items[0]} last />
               <div style={COL_DIV}></div>
-              <RenderItem item={sec.items[1]} />
+              <RenderItem item={sec.items[1]} last />
               <div style={COL_DIV}></div>
-              <RenderItem item={sec.items[2]} />
+              <RenderItem item={sec.items[2]} last />
             </div>
           ) : sec.items.length === 2 ? (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
-              <RenderItem item={sec.items[0]} />
+              <RenderItem item={sec.items[0]} last />
               <div style={COL_DIV}></div>
-              <RenderItem item={sec.items[1]} />
+              <RenderItem item={sec.items[1]} last />
             </div>
           ) : (
             sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)
@@ -239,7 +240,7 @@ export default function BulletinDetailPage() {
       ))}
 
       {(statsSec.length > 0 || launchSec.length > 0) && (
-        <div style={{ ...BOX, marginBottom: "12px" }}>
+        <div style={BOX}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
             <div>
               {statsSec.map((sec, si) => (
@@ -263,7 +264,7 @@ export default function BulletinDetailPage() {
       )}
 
       {(ecoSec.length > 0 || agentSec.length > 0) && (
-        <div style={{ ...BOX, marginBottom: "12px" }}>
+        <div style={BOX}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
             <div>
               {ecoSec.map((sec, si) => (
@@ -287,7 +288,7 @@ export default function BulletinDetailPage() {
       )}
 
       {parsed.sources.length > 0 && (
-        <div style={{ ...BOX, marginTop: "16px" }}>
+        <div style={BOX}>
           <div style={SECTION_LABEL}>{locale === "tr" ? "Kaynaklar" : "Sources"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
             {parsed.sources.map((src, i) => (
