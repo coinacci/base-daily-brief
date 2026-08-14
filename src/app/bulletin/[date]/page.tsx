@@ -316,7 +316,17 @@ export default function BulletinDetailPage() {
         </div>
       )}
 
-      {parsed.disclaimer && (
+      {spotlightSec.length > 0 && (
+        <div style={BOX}>
+          <div style={SECTION_LABEL}>Project Spotlight</div>
+          {spotlightSec.map((sec, si) => (
+            <div key={si}>
+              {sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)}
+            </div>
+          ))}
+        </div>
+      )}
+            {parsed.disclaimer && (
         <div style={{ fontFamily: "Georgia, serif", fontSize: "12px", fontStyle: "italic", color: "var(--text-muted)", textAlign: "center", padding: "12px 0" }}>
           {parsed.disclaimer}
         </div>
