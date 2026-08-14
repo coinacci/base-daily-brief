@@ -97,6 +97,14 @@ export default function BulletinDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
   const [parsed, setParsed] = useState<ParsedBulletin | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   function loadBulletin(walletAddress?: string) {
     setLoading(true); setNotFound(false); setPaymentRequired(false);
@@ -220,7 +228,7 @@ export default function BulletinDetailPage() {
         <div key={si} style={BOX}>
           <div style={SECTION_LABEL}>{sec.label}</div>
           {sec.items.length === 3 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr 0.5px 1fr", gap: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr 0.5px 1fr", gap: 0 }}>
               <RenderItem item={sec.items[0]} last />
               <div style={COL_DIV}></div>
               <RenderItem item={sec.items[1]} last />
@@ -228,7 +236,7 @@ export default function BulletinDetailPage() {
               <RenderItem item={sec.items[2]} last />
             </div>
           ) : sec.items.length === 2 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr", gap: 0 }}>
               <RenderItem item={sec.items[0]} last />
               <div style={COL_DIV}></div>
               <RenderItem item={sec.items[1]} last />
@@ -241,7 +249,7 @@ export default function BulletinDetailPage() {
 
       {(statsSec.length > 0 || launchSec.length > 0) && (
         <div style={BOX}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr", gap: 0 }}>
             <div>
               {statsSec.map((sec, si) => (
                 <div key={si}>
@@ -265,7 +273,7 @@ export default function BulletinDetailPage() {
 
       {(ecoSec.length > 0 || agentSec.length > 0) && (
         <div style={BOX}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 0.5px 1fr", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr", gap: 0 }}>
             <div>
               {ecoSec.map((sec, si) => (
                 <div key={si}>
@@ -290,7 +298,7 @@ export default function BulletinDetailPage() {
       {parsed.sources.length > 0 && (
         <div style={BOX}>
           <div style={SECTION_LABEL}>{locale === "tr" ? "Kaynaklar" : "Sources"}</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "6px 24px" }}>
             {parsed.sources.map((src, i) => (
               <div key={i} style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                 <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", flexShrink: 0 }}>{src.num}.</span>
