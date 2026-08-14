@@ -173,6 +173,7 @@ const { apiKey } = await sub.json();
                   <a href="/.well-known/agent-card.json" style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", textDecoration: "none" }}>Agent card →</a>
                   <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>$0.01 USDC · Base Mainnet · EIP-3009</span>
                 </div>
+              </>}
               </div>
             </div>
 
