@@ -38,7 +38,7 @@ export function GET() {
               name: "X-API-Key",
               in: "header",
               required: false,
-              description: "Subscription API key obtained from POST /api/subscribe. Bypasses per-call x402 payment.",
+              description: "Subscription API key from POST /api/subscribe. Bypasses per-call x402 payment.",
               schema: { type: "string" }
             }
           ],
@@ -53,7 +53,7 @@ export function GET() {
                       date: { type: "string", example: "2026-08-13" },
                       title: { type: "string" },
                       summary: { type: "string" },
-                      content: { type: "string", description: "Full markdown content" },
+                      content: { type: "string" },
                       locale: { type: "string", enum: ["en", "tr"] },
                       slug: { type: "string" }
                     }
@@ -62,16 +62,10 @@ export function GET() {
               }
             },
             "402": {
-              description: "Payment required. Use X-PAYMENT header with EIP-3009 signed transfer, or subscribe via POST /api/subscribe.",
-              headers: {
-                "payment-required": {
-                  description: "Base64-encoded JSON with x402 payment requirements",
-                  schema: { type: "string" }
-                }
-              }
+              description: "Payment required via x402 protocol."
             },
             "429": {
-              description: "Daily rate limit exceeded for subscription key (limit: 5 calls/day)"
+              description: "Daily rate limit exceeded (5 calls/day per subscription key)."
             }
           },
           "x-x402": {
@@ -90,6 +84,24 @@ export function GET() {
           summary: "Subscribe for 30-day access",
           description: "Pay $0.25 USDC once via x402 and receive an API key valid for 30 days. Use the key in X-API-Key header to bypass per-call payments. Rate limited to 5 calls/day per key.",
           operationId: "subscribe",
+          requestBody: {
+            required: false,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    callbackUrl: {
+                      type: "string",
+                      format: "uri",
+                      description: "Optional HTTPS webhook URL. Receives a POST with bulletin data each day when a new bulletin is published.",
+                      example: "https://your-agent.example.com/webhook/bulletin"
+                    }
+                  }
+                }
+              }
+            }
+          },
           responses: {
             "200": {
               description: "Subscription created. Save the apiKey — it will not be shown again.",
@@ -98,11 +110,18 @@ export function GET() {
                   schema: {
                     type: "object",
                     properties: {
-                      apiKey: { type: "string", description: "UUID API key — save this securely" },
+                      apiKey: { type: "string", description: "UUID API key — save securely" },
                       expiresAt: { type: "string", format: "date-time" },
                       days: { type: "integer", example: 30 },
                       dailyLimit: { type: "integer", example: 5 },
-                      usage: { type: "string", example: "Add X-API-Key header to /api/bulletins/{date} requests" }
+                      webhook: {
+                        type: "object",
+                        properties: {
+                          registered: { type: "boolean" },
+                          callbackUrl: { type: "string" }
+                        }
+                      },
+                      usage: { type: "string" }
                     }
                   }
                 }
