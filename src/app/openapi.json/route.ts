@@ -26,7 +26,7 @@ export function GET() {
             { name: "X-API-Key", in: "header", required: false, description: "Subscription API key. Bypasses per-call x402.", schema: { type: "string" } }
           ],
           responses: {
-            "200": { description: "Bulletin content after payment or valid subscription key" },
+            "200": { description: "Bulletin content", content: { "application/json": { schema: { type: "object", properties: { date: { type: "string" }, title: { type: "string" }, summary: { type: "string" }, content: { type: "string" }, locale: { type: "string" } } } } } },
             "402": { description: "Payment required via x402 protocol." },
             "429": { description: "Daily rate limit exceeded." }
           },
@@ -87,7 +87,7 @@ export function GET() {
             }
           },
           responses: {
-            "200": { description: "Subscription created. Save the apiKey." },
+            "200": { description: "Subscription created", content: { "application/json": { schema: { type: "object", properties: { apiKey: { type: "string" }, expiresAt: { type: "string" }, days: { type: "integer" }, dailyLimit: { type: "integer" } } } } } },
             "402": { description: "Payment required. $0.25 USDC on Base Mainnet." }
           },
           "x-x402": {
