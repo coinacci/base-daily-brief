@@ -126,10 +126,10 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* For AI Agents */}
+              {/* <strong>For AI Agents</strong> <span>{agentsOpen ? "▲" : "▼"}</span> */}
               <div style={{ borderTop: "2px solid var(--text-primary)", paddingTop: "16px" }}>
                 <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px", cursor: "pointer", display: "flex", justifyContent: "space-between" }} onClick={() => setAgentsOpen(!agentsOpen)}>
-                  For AI Agents
+                  <strong>For AI Agents</strong> <span>{agentsOpen ? "▲" : "▼"}</span>
                 </div>
                 {agentsOpen && <><div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" }}>
                   Machine-readable API via x402
