@@ -48,7 +48,7 @@ function parseBulletin(content: string): ParsedBulletin {
     if (currentSection) {
       if (t.startsWith("### ")) { pushItem(); currentItem = { head: t.slice(4), source: "", quote: "", body: "", why: "" }; continue; }
       if (currentItem) {
-        if (t.startsWith("**Kaynak:**") || t.startsWith("**Source:**")) { currentItem.source = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim(); }
+        if (t.startsWith("**Kaynak:**") || t.startsWith("**Source:**")) { const raw = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim(); currentItem.source = raw.replace(/\\(https?:\/\/[^)]+\\)/g, "").trim(); }
         else if (t.startsWith("> ")) { currentItem.quote = t.slice(2); }
         else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters")) { /* skip */ }
         else if (t.length > 0 && !t.startsWith("#")) {
@@ -68,15 +68,16 @@ function parseBulletin(content: string): ParsedBulletin {
 const BOX: React.CSSProperties = { border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "4px" };
 const SECTION_LABEL: React.CSSProperties = { fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" };
 const ITEM_HEAD: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "16px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "5px" };
+const DIVIDER: React.CSSProperties = { borderTop: "1px solid var(--border-strong)", margin: "14px 0" };
 const ITEM_SOURCE: React.CSSProperties = { fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.05em", marginBottom: "6px" };
 const ITEM_QUOTE: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "italic", color: "var(--text-secondary)", borderLeft: "3px solid var(--border-strong)", paddingLeft: "12px", margin: "8px 0", lineHeight: 1.6 };
 const ITEM_BODY: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.75, color: "var(--text-primary)", marginBottom: "6px" };
 const ITEM_WHY: React.CSSProperties = { fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "italic", color: "var(--text-secondary)", marginTop: "6px", borderLeft: "2px solid var(--border-accent)", paddingLeft: "10px", lineHeight: 1.6 };
 const COL_DIV: React.CSSProperties = { background: "var(--border)", margin: "0 16px" };
 
-function RenderItem({ item }: { item: Item }) {
+function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
   return (
-    <div>
+    <div style={{ borderBottom: last ? "none" : "1px solid var(--border)", paddingBottom: last ? "0" : "14px", marginBottom: last ? "0" : "14px" }}>
       {item.head && <div style={ITEM_HEAD}>{item.head}</div>}
       {item.source && <div style={ITEM_SOURCE}>{item.source}</div>}
       {item.quote && <div style={ITEM_QUOTE}>"{item.quote}"</div>}
@@ -84,7 +85,7 @@ function RenderItem({ item }: { item: Item }) {
       {item.why && <div style={ITEM_WHY}>{item.why.trim()}</div>}
     </div>
   );
-}
+}}
 
 export default function BulletinDetailPage() {
   const { locale, t } = useLanguage();
@@ -232,7 +233,7 @@ export default function BulletinDetailPage() {
               <RenderItem item={sec.items[1]} />
             </div>
           ) : (
-            sec.items.map((item, i) => <RenderItem key={i} item={item} />)
+            sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)
           )}
         </div>
       ))}
@@ -244,7 +245,7 @@ export default function BulletinDetailPage() {
               {statsSec.map((sec, si) => (
                 <div key={si}>
                   <div style={SECTION_LABEL}>{sec.label}</div>
-                  {sec.items.map((item, i) => <RenderItem key={i} item={item} />)}
+                  {sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)}
                 </div>
               ))}
             </div>
@@ -253,7 +254,7 @@ export default function BulletinDetailPage() {
               {launchSec.map((sec, si) => (
                 <div key={si}>
                   <div style={SECTION_LABEL}>{sec.label}</div>
-                  {sec.items.map((item, i) => <RenderItem key={i} item={item} />)}
+                  {sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)}
                 </div>
               ))}
             </div>
@@ -268,7 +269,7 @@ export default function BulletinDetailPage() {
               {ecoSec.map((sec, si) => (
                 <div key={si}>
                   <div style={SECTION_LABEL}>{sec.label}</div>
-                  {sec.items.map((item, i) => <RenderItem key={i} item={item} />)}
+                  {sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)}
                 </div>
               ))}
             </div>
@@ -277,7 +278,7 @@ export default function BulletinDetailPage() {
               {agentSec.map((sec, si) => (
                 <div key={si}>
                   <div style={SECTION_LABEL}>{sec.label}</div>
-                  {sec.items.map((item, i) => <RenderItem key={i} item={item} />)}
+                  {sec.items.map((item, i) => <RenderItem key={i} item={item} last={i === sec.items.length - 1} />)}
                 </div>
               ))}
             </div>
