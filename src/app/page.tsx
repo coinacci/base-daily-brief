@@ -60,7 +60,6 @@ export default function HomePage() {
                 {locale === "tr" ? "Son bülten" : "Latest bulletin"}
               </div>
 
-              {/* Bülten kartı */}
               <div style={{ border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "14px" }}>
                 <div style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 900, lineHeight: 1.2, color: "var(--text-primary)", marginBottom: "10px" }}>{latest.title}</div>
                 {latest.summary && (
@@ -79,9 +78,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* CTA butonu */}
+              {/* CTA butonu — bold ve belirgin */}
               <Link href={`/bulletin/${latest.date}`} style={{ textDecoration: "none", display: "block" }}>
-                <div style={{ background: "var(--text-primary)", color: "var(--surface-2)", fontFamily: "Georgia, serif", fontSize: "16px", fontWeight: 700, padding: "14px 20px", textAlign: "center", letterSpacing: "0.02em", cursor: "pointer" }}>
+                <div style={{ background: "var(--text-primary)", color: "var(--surface-2)", fontFamily: "Georgia, serif", fontSize: "17px", fontWeight: 900, padding: "16px 20px", textAlign: "center", letterSpacing: "0.01em", cursor: "pointer" }}>
                   {locale === "tr" ? "Bülteni Oku — $0.01 USDC Öde →" : "Read Bulletin — Pay $0.01 USDC →"}
                 </div>
               </Link>
@@ -91,24 +90,28 @@ export default function HomePage() {
             </div>
 
             {/* Dikey ayırıcı */}
-            <div style={{ background: "var(--border-strong)", margin: "0" }}></div>
+            <div style={{ background: "var(--border-strong)" }}></div>
 
             {/* Sağ: Arşiv + Agents */}
             <div style={{ paddingLeft: "20px" }}>
 
-              {/* Arşiv — kaydırılabilir */}
+              {/* Arşiv — kaydırılabilir, çizgili */}
               {archive.length > 0 && (
                 <div style={{ marginBottom: "24px" }}>
                   <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
                     {locale === "tr" ? "Arşiv" : "Archive"} ({archive.length})
                   </div>
-                  <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border)", padding: "8px" }}>
-                    {archive.map((b) => (
+                  <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                    {archive.map((b, i) => (
                       <Link key={b.date} href={`/bulletin/${b.date}`} style={{ textDecoration: "none", display: "block" }}>
-                        <div style={{ paddingBottom: "12px", marginBottom: "12px", borderBottom: "0.5px solid var(--border)" }}>
-                          <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "4px" }}>{b.title}</div>
-                          {b.summary && <div style={{ fontFamily: "Georgia, serif", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5, fontStyle: "italic", marginBottom: "4px" }}>{b.summary}</div>}
-                          <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>{b.date} · $0.01 USDC</div>
+                        <div style={{ paddingBottom: "14px", marginBottom: "14px", borderBottom: i === archive.length - 1 ? "none" : "1px solid var(--border)" }}>
+                          <div style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)", marginBottom: "4px" }}>{b.title}</div>
+                          {b.summary && (
+                            <div style={{ fontFamily: "Georgia, serif", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5, fontStyle: "italic", marginBottom: "4px" }}>{b.summary}</div>
+                          )}
+                          <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", fontWeight: 600 }}>
+                            {b.date} · <strong>$0.01 USDC</strong>
+                          </div>
                         </div>
                       </Link>
                     ))}
