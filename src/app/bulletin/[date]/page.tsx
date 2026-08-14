@@ -85,7 +85,7 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
       {item.why && <div style={ITEM_WHY}>{item.why.trim()}</div>}
     </div>
   );
-}}
+}
 
 export default function BulletinDetailPage() {
   const { locale, t } = useLanguage();
