@@ -188,16 +188,18 @@ const { apiKey } = await sub.json();
           <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
             Project Spotlight
           </div>
-          <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "14px" }}>
-            {locale === "tr"
-              ? "Base ekosistemindeki projenizi bültenimizde öne çıkaralım."
-              : "Feature your Base ecosystem project in our bulletin."}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <span style={{ fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.7, color: "var(--text-secondary)" }}>
+              {locale === "tr"
+                ? "Base ekosistemindeki projenizi bültenimizde öne çıkaralım."
+                : "Feature your Base ecosystem project in our bulletin."}
+            </span>
+            <Link href="/spotlight" style={{ textDecoration: "none", flexShrink: 0 }}>
+              <span style={{ fontFamily: "monospace", fontSize: "11px", fontWeight: 500, border: "1px solid var(--text-primary)", padding: "4px 12px", color: "var(--text-primary)", letterSpacing: "0.06em", cursor: "pointer" }}>
+                {locale === "tr" ? "Başvur →" : "Apply →"}
+              </span>
+            </Link>
           </div>
-          <Link href="/spotlight" style={{ textDecoration: "none", display: "inline-block" }}>
-            <div style={{ fontFamily: "monospace", fontSize: "11px", fontWeight: 500, border: "1px solid var(--text-primary)", padding: "10px 20px", color: "var(--text-primary)", letterSpacing: "0.06em", cursor: "pointer" }}>
-              {locale === "tr" ? "Başvur →" : "Apply →"}
-            </div>
-          </Link>
         </div>
 
         <div style={{ borderTop: "2px solid var(--text-primary)", borderBottom: "1px solid var(--border)", padding: "6px 0", marginTop: "16px", display: "flex", justifyContent: "space-between" }}>
