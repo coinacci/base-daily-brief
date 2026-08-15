@@ -104,3 +104,24 @@ export async function isBulletinPaid(
   const val = await redis.get(key);
   return val !== null;
 }
+
+export async function incrementSales(date: string): Promise<void> {
+  await redis.incr(`sales:${date}`);
+}
+
+export async function getSales(date: string): Promise<number> {
+  const val = await redis.get<number>(`sales:${date}`);
+  return val ?? 0;
+}
+
+export async function getAllSales(): Promise<{ date: string; count: number }[]> {
+  const keys = await redis.keys("sales:*");
+  if (!keys || keys.length === 0) return [];
+  const results: { date: string; count: number }[] = [];
+  for (const key of keys) {
+    const count = await redis.get<number>(key);
+    const date = key.replace("sales:", "");
+    results.push({ date, count: count ?? 0 });
+  }
+  return results.sort((a, b) => b.date.localeCompare(a.date));
+}

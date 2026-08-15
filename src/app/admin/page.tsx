@@ -12,7 +12,23 @@ export default function AdminPage() {
   const [content, setContent] = useState("");
   const [locale, setLocale] = useState<Locale>("tr");
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
+  const [sales, setSales] = useState<{date: string; count: number}[]>([]);
+  const [totalSales, setTotalSales] = useState(0);
+  const [loadingStats, setLoadingStats] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+
+  async function loadStats() {
+    setLoadingStats(true);
+    const res = await fetch("/api/admin/stats", {
+      headers: { "x-admin-password": password }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setSales(data.sales);
+      setTotalSales(data.total);
+    }
+    setLoadingStats(false);
+  }
 
   async function handleSubmit() {
     setStatus("idle");
@@ -35,7 +51,49 @@ export default function AdminPage() {
     return (
       <main style={{ background: "#f5f0e8", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
         <div style={{ width: "100%", maxWidth: "360px" }}>
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 900, color: "#1a1408", marginBottom: "24px" }}>Admin</h1>
+          
+        {/* Satış İstatistikleri */}
+        <div style={{ marginBottom: "32px", border: "1px solid var(--border-strong)", padding: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 700, color: "var(--text-primary)" }}>
+              Sales Stats
+            </h2>
+            <button
+              onClick={loadStats}
+              disabled={loadingStats}
+              style={{ fontFamily: "monospace", fontSize: "11px", border: "1px solid var(--border-strong)", padding: "6px 14px", cursor: "pointer", background: "var(--surface-1)" }}
+            >
+              {loadingStats ? "Loading..." : "Load Stats"}
+            </button>
+          </div>
+          {sales.length > 0 && (
+            <>
+              <div style={{ fontFamily: "monospace", fontSize: "12px", color: "var(--text-accent)", marginBottom: "12px" }}>
+                Total: {totalSales} sales
+              </div>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th style={{ fontFamily: "monospace", fontSize: "10px", textAlign: "left", color: "var(--text-muted)", paddingBottom: "6px", borderBottom: "1px solid var(--border)" }}>DATE</th>
+                    <th style={{ fontFamily: "monospace", fontSize: "10px", textAlign: "right", color: "var(--text-muted)", paddingBottom: "6px", borderBottom: "1px solid var(--border)" }}>SALES</th>
+                    <th style={{ fontFamily: "monospace", fontSize: "10px", textAlign: "right", color: "var(--text-muted)", paddingBottom: "6px", borderBottom: "1px solid var(--border)" }}>REVENUE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sales.map((s) => (
+                    <tr key={s.date}>
+                      <td style={{ fontFamily: "monospace", fontSize: "12px", padding: "6px 0", borderBottom: "0.5px solid var(--border)", color: "var(--text-primary)" }}>{s.date}</td>
+                      <td style={{ fontFamily: "monospace", fontSize: "12px", padding: "6px 0", borderBottom: "0.5px solid var(--border)", color: "var(--text-primary)", textAlign: "right" }}>{s.count}</td>
+                      <td style={{ fontFamily: "monospace", fontSize: "12px", padding: "6px 0", borderBottom: "0.5px solid var(--border)", color: "var(--text-accent)", textAlign: "right" }}>${(s.count * 0.01).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
+
+        <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 900, color: "#1a1408", marginBottom: "24px" }}>Admin</h1>
           <input
             type="password"
             placeholder="Şifre"

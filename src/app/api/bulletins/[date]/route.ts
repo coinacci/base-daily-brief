@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBulletin, type Locale } from "@/lib/bulletins";
 import { withX402 } from "@x402/next";
 import { createX402Server, x402Config } from "@/lib/x402";
-import { getSubscription, checkRateLimit, isBulletinPaid, markBulletinPaid } from "@/lib/redis";
+import { getSubscription, checkRateLimit, isBulletinPaid, markBulletinPaid, incrementSales } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,7 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
     await markBulletinPaid(payerAddress, date).catch(() => {});
   }
 
+  await incrementSales(date).catch(() => {});
   return NextResponse.json(bulletin);
 };
 
