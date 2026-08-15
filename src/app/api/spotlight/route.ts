@@ -4,9 +4,9 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
-  const { projectName, website, twitter, email, description } = await req.json();
+  const { projectName, twitter, email, description } = await req.json();
 
-  if (!projectName || !website || !email || !description) {
+  if (!projectName || !email || !description) {
     return NextResponse.json({ error: "Eksik alan var." }, { status: 400 });
   }
 
@@ -26,11 +26,7 @@ export async function POST(req: NextRequest) {
             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Proje Adı</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${projectName}</td>
           </tr>
-          <tr>
-            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Website</td>
-            <td style="padding: 8px; border: 1px solid #ddd;"><a href="${website}">${website}</a></td>
-          </tr>
-          <tr>
+<tr>
             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Twitter/X</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${twitter || "—"}</td>
           </tr>

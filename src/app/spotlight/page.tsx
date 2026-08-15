@@ -9,7 +9,6 @@ export default function SpotlightPage() {
   const { locale, t } = useLanguage();
   const [form, setForm] = useState({
     projectName: "",
-    website: "",
     twitter: "",
     email: "",
     description: "",
@@ -133,12 +132,7 @@ export default function SpotlightPage() {
                 <input name="projectName" value={form.projectName} onChange={handleChange} style={inputStyle} />
               </div>
 
-              <div>
-                <label style={labelStyle}>Website *</label>
-                <input name="website" value={form.website} onChange={handleChange} placeholder="https://" style={inputStyle} />
-              </div>
-
-              <div>
+<div>
                 <label style={labelStyle}>Twitter / X</label>
                 <input name="twitter" value={form.twitter} onChange={handleChange} placeholder="@username" style={inputStyle} />
               </div>
@@ -176,7 +170,7 @@ export default function SpotlightPage() {
 
               <button
                 onClick={handleSubmit}
-                disabled={charCount > 500 || !form.projectName || !form.website || !form.email || !form.description}
+                disabled={charCount > 500 || !form.projectName || !form.email || !form.description}
                 style={{
                   fontFamily: "Georgia, serif",
                   fontSize: "16px",
@@ -186,7 +180,7 @@ export default function SpotlightPage() {
                   border: "none",
                   padding: "16px",
                   cursor: "pointer",
-                  opacity: (charCount > 500 || !form.projectName || !form.website || !form.email || !form.description) ? 0.5 : 1,
+                  opacity: (charCount > 500 || !form.projectName || !form.email || !form.description) ? 0.5 : 1,
                 }}
               >
                 {locale === "tr" ? "Başvuruyu Gönder" : "Submit Application"}
