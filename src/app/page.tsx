@@ -69,7 +69,7 @@ export default function HomePage() {
                 {locale === "tr" ? "Son bülten" : "Latest bulletin"}
               </div>
 
-              <div style={{ border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "14px" }}>
+              <div style={{ border: "1px solid var(--border-strong)", padding: "16px", marginBottom: "8px" }}>
                 <div style={{ fontFamily: "Georgia, serif", fontSize: isMobile ? "20px" : "22px", fontWeight: 900, lineHeight: 1.2, color: "var(--text-primary)", marginBottom: "10px" }}>{latest.title}</div>
                 {latest.summary && (
                   <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "italic", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "10px", borderBottom: "0.5px solid var(--border)", paddingBottom: "10px" }}>{latest.summary}</div>
