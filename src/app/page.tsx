@@ -184,14 +184,14 @@ const { apiKey } = await sub.json();
 
 
         {/* Project Spotlight CTA */}
-        <div style={{ borderTop: "2px solid var(--text-primary)", paddingTop: "20px", marginTop: "32px", marginBottom: "8px" }}>
-          <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+        <div style={{ borderTop: "2px solid var(--text-primary)", paddingTop: "16px", marginTop: "16px", marginBottom: "8px" }}>
+          <div style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
             Project Spotlight
           </div>
           <div style={{ fontFamily: "Georgia, serif", fontSize: "14px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "14px" }}>
             {locale === "tr"
-              ? "Base ekosistemindeki projenizi bültenimizde öne çıkaralım. Başvurular incelenerek editoryal kararla yayınlanır."
-              : "Feature your Base ecosystem project in our bulletin. Applications are reviewed and published at editorial discretion."}
+              ? "Base ekosistemindeki projenizi bültenimizde öne çıkaralım."
+              : "Feature your Base ecosystem project in our bulletin."}
           </div>
           <Link href="/spotlight" style={{ textDecoration: "none", display: "inline-block" }}>
             <div style={{ fontFamily: "monospace", fontSize: "11px", fontWeight: 500, border: "1px solid var(--text-primary)", padding: "10px 20px", color: "var(--text-primary)", letterSpacing: "0.06em", cursor: "pointer" }}>
