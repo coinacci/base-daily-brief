@@ -35,7 +35,7 @@ export default function SpotlightPage() {
     const data = await res.json();
     if (res.ok) {
       setStatus("ok");
-      setForm({ projectName: "", website: "", twitter: "", email: "", description: "" });
+      setForm({ projectName: "", twitter: "", email: "", description: "" });
       setCharCount(0);
     } else {
       setStatus("err");
