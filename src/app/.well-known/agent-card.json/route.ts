@@ -9,11 +9,28 @@ export function GET() {
     url: "https://basedailybrief.vercel.app",
     version: "1.0.0",
     capabilities: ["x402", "subscription"],
+    x402: {
+      enabled: true,
+      facilitator: "https://x402.org/facilitator",
+      network: "eip155:8453",
+      asset: "USDC",
+      builderCode: "bc_2iax4m4l"
+    },
+    agenticWallets: {
+      compatible: true,
+      skills: ["search-for-service", "pay-for-service"],
+      installCommand: "npx skills add coinbase/agentic-wallet-skills",
+      examplePrompts: [
+        "Find APIs for Base ecosystem news",
+        "Get today's Base Daily Brief",
+        "Pay for the latest Base bulletin"
+      ]
+    },
     endpoints: [
       {
         path: "/api/bulletins/{date}",
         method: "GET",
-        description: "Get full bulletin content for a given date",
+        description: "Get full bulletin content for a given date. Pay $0.01 USDC via x402 or use X-API-Key from subscription.",
         payment: {
           scheme: "exact",
           network: "eip155:8453",
@@ -26,14 +43,14 @@ export function GET() {
           description: "Use API key from /api/subscribe to bypass per-call payment"
         },
         parameters: [
-          { name: "date", in: "path", required: true, example: "2026-08-13" },
+          { name: "date", in: "path", required: true, example: "2026-08-17" },
           { name: "locale", in: "query", required: false, enum: ["en", "tr"], default: "en" }
         ]
       },
       {
         path: "/api/subscribe",
         method: "POST",
-        description: "Pay once, get an API key valid for 30 days. Rate limited to 5 calls/day.",
+        description: "Pay $0.25 USDC once, get an API key valid for 30 days. Rate limited to 5 calls/day.",
         payment: {
           scheme: "exact",
           network: "eip155:8453",
@@ -43,7 +60,10 @@ export function GET() {
         }
       }
     ],
-    tags: ["base", "bulletin", "news", "ecosystem", "x402", "agent-native", "subscription"],
-    builderCode: "bc_2iax4m4l"
+    tags: ["base", "bulletin", "news", "ecosystem", "x402", "agent-native", "subscription", "agentic-wallets"],
+    builderCode: "bc_2iax4m4l",
+    contact: {
+      x: "https://x.com/coinacci"
+    }
   });
 }
