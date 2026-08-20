@@ -1,0 +1,16 @@
+name: Trigger webhook on bulletin push
+
+on:
+  push:
+    paths:
+      - 'content/bulletins/**.md'
+
+jobs:
+  trigger-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Base Daily Brief webhook
+        run: |
+          curl -X GET \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            https://basedailybrief.vercel.app/api/cron/webhook
