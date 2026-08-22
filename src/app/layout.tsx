@@ -22,7 +22,6 @@ export const metadata: Metadata = {
       "base:builder_code": "bc_2iax4m4l",
       "fc:miniapp": '{"version":"1","imageUrl":"https://basedailybrief.vercel.app/og-image.png","button":{"title":"Read Brief","action":{"type":"launch_frame","name":"Base Daily Brief","url":"https://basedailybrief.vercel.app","splashImageUrl":"https://basedailybrief.vercel.app/icon.png","splashBackgroundColor":"#f5f0e8"}}}',
       "fc:frame": '{"version":"1","imageUrl":"https://basedailybrief.vercel.app/og-image.png","button":{"title":"Read Brief","action":{"type":"launch_frame","name":"Base Daily Brief","url":"https://basedailybrief.vercel.app","splashImageUrl":"https://basedailybrief.vercel.app/icon.png","splashBackgroundColor":"#f5f0e8"}}}',
-    "base:builder_code": "bc_2iax4m4l",
   },
 };
 
