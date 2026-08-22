@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import sdk from "@farcaster/miniapp-sdk";
 import { useConnect, useAccount, useDisconnect, useConnectors, useWalletClient } from "wagmi";
 import { createWalletClient, custom } from "viem";
 import { base } from "viem/chains";
@@ -24,17 +25,28 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
   const [evmAddress, setEvmAddress] = useState<string | null>(null);
+  const [isFarcaster, setIsFarcaster] = useState(false);
+
+  useEffect(() => {
+    sdk.context.then((ctx) => {
+      if (ctx?.user?.fid) setIsFarcaster(true);
+    }).catch(() => {});
+  }, []);
 
   const cbConnector = connectors.find((c) => c.id === "coinbaseWalletSDK");
 
   async function handleEVMConnect() {
-    if (typeof window === "undefined" || !window.ethereum) {
-      window.open("https://metamask.io/download/", "_blank");
-      return;
-    }
     try {
-      const accounts = await (window.ethereum as any).request({ method: "eth_requestAccounts" });
-      if (accounts?.[0]) setEvmAddress(accounts[0]);
+      if (isFarcaster) {
+        const provider = sdk.wallet.ethProvider;
+        const accounts = await provider.request({ method: "eth_requestAccounts" });
+        if (accounts?.[0]) setEvmAddress(accounts[0]);
+      } else if (typeof window !== "undefined" && window.ethereum) {
+        const accounts = await (window.ethereum as any).request({ method: "eth_requestAccounts" });
+        if (accounts?.[0]) setEvmAddress(accounts[0]);
+      } else {
+        window.open("https://metamask.io/download/", "_blank");
+      }
     } catch {
       setError(locale === "tr" ? "Cüzdan bağlantısı reddedildi" : "Wallet connection rejected");
     }
