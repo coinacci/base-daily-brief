@@ -18,13 +18,10 @@ export const metadata: Metadata = {
   title: "Base Daily Brief",
   description: "Base ekosisteminden süzülmüş, kaynaklı günlük özetler.",
   other: {
-      "fc:frame": "vNext",
-      "fc:frame:image": "https://basedailybrief.vercel.app/og-image.png",
-      "fc:frame:button:1": "Read Brief",
-      "fc:frame:post_url": "https://basedailybrief.vercel.app",
-      "of:version": "vNext",
-      "of:accepts:xmtp": "vNext",
-    "base:app_id": "6a7d7123ff2c2a5c4a672477",
+      "base:app_id": "6a7d7123ff2c2a5c4a672477",
+      "base:builder_code": "bc_2iax4m4l",
+      "fc:miniapp": '{"version":"1","imageUrl":"https://basedailybrief.vercel.app/og-image.png","button":{"title":"Read Brief","action":{"type":"launch_frame","name":"Base Daily Brief","url":"https://basedailybrief.vercel.app","splashImageUrl":"https://basedailybrief.vercel.app/icon.png","splashBackgroundColor":"#f5f0e8"}}}',
+      "fc:frame": '{"version":"1","imageUrl":"https://basedailybrief.vercel.app/og-image.png","button":{"title":"Read Brief","action":{"type":"launch_frame","name":"Base Daily Brief","url":"https://basedailybrief.vercel.app","splashImageUrl":"https://basedailybrief.vercel.app/icon.png","splashBackgroundColor":"#f5f0e8"}}}',
     "base:builder_code": "bc_2iax4m4l",
   },
 };
