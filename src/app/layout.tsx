@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
+import { FarcasterProvider } from "@/components/FarcasterProvider";
 import { WagmiProvider } from "@/components/WagmiProvider";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <WagmiProvider>
+          <FarcasterProvider />
           <LanguageProvider>{children}</LanguageProvider>
         </WagmiProvider>
       </body>
