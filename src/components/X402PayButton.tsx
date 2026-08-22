@@ -122,10 +122,11 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
     try {
       await switchToBase(window.ethereum);
 
+      const ethereum = isFarcaster ? sdk.wallet.ethProvider : window.ethereum;
       const wallet = createWalletClient({
         account: addr as `0x${string}`,
         chain: base,
-        transport: custom(window.ethereum as any),
+        transport: custom(ethereum as any),
       });
 
       const signer = {
