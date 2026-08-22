@@ -24,6 +24,12 @@ export function GET() {
       tagline: "Base ecosystem, daily.",
       primaryCategory: "news-media",
       tags: ["base", "crypto", "news", "agents", "defi"],
+      webhookUrl: "https://basedailybrief.vercel.app/api/cron/webhook",
+      screenshotUrls: [
+        "https://basedailybrief.vercel.app/screenshots/1.png",
+        "https://basedailybrief.vercel.app/screenshots/2.png",
+        "https://basedailybrief.vercel.app/screenshots/3.png"
+      ],
       ogTitle: "Base Daily Brief",
       ogDescription: "Daily curated bulletin from the Base ecosystem.",
       ogImageUrl: "https://basedailybrief.vercel.app/og-image.png",
