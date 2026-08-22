@@ -12,12 +12,22 @@ export function GET() {
     frame: {
       version: "1",
       name: "Base Daily Brief",
+      subtitle: "Daily intelligence from the Base ecosystem",
+      description: "Curated daily bulletin from the Base ecosystem, gated by x402 protocol. $0.01 USDC per issue. Agent-native, MCP-ready.",
       iconUrl: "https://basedailybrief.vercel.app/icon.png",
       homeUrl: "https://basedailybrief.vercel.app",
       imageUrl: "https://basedailybrief.vercel.app/og-image.png",
+      heroImageUrl: "https://basedailybrief.vercel.app/og-image.png",
       buttonTitle: "Read Brief",
       splashImageUrl: "https://basedailybrief.vercel.app/icon.png",
-      splashBackgroundColor: "#f5f0e8"
+      splashBackgroundColor: "#f5f0e8",
+      tagline: "Base ecosystem intelligence, daily.",
+      primaryCategory: "news",
+      tags: ["base", "crypto", "news", "agents", "x402", "defi"],
+      ogTitle: "Base Daily Brief",
+      ogDescription: "Daily curated bulletin from the Base ecosystem. $0.01 USDC via x402.",
+      ogImageUrl: "https://basedailybrief.vercel.app/og-image.png",
+      castShareUrl: "https://basedailybrief.vercel.app"
     }
   });
 }
