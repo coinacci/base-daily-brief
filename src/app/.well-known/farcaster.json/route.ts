@@ -5,9 +5,9 @@ export const dynamic = "force-static";
 export function GET() {
   return NextResponse.json({
     accountAssociation: {
-      header: "",
-      payload: "",
-      signature: ""
+      header: "eyJmaWQiOjI5MDY3MywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDAyNmE2NTRGRGNFNTlCNzEyNjM1YTE4NTlDNjViY0E0NzJkN0NCYzAifQ",
+      payload: "eyJkb21haW4iOiJiYXNlZGFpbHlicmllZi52ZXJjZWwuYXBwIn0",
+      signature: "PiphIMxNZ4G7rzkGseK94ophRJVK/Db7yIBCB6tzaHREuWmR7Z2D6yEe1jpKR65vjwggyQZ7wDz3W3nhEWqmuBs="
     },
     frame: {
       version: "1",
