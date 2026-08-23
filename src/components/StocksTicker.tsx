@@ -14,7 +14,7 @@ export function StocksTicker() {
   const [stocks, setStocks] = useState<Stock[]>([]);
 
   useEffect(() => {
-    fetch("/api/stocks")
+    fetch("/api/stocks/public")
       .then((r) => r.json())
       .then((data) => setStocks(data.stocks || []));
   }, []);
