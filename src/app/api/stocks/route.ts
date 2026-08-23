@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withX402 } from "@x402/next";
+import { createX402Server, x402Config } from "@/lib/x402";
 
 export const dynamic = "force-dynamic";
 
@@ -10,20 +12,11 @@ const STOCKS = [
 ];
 
 async function fetchStockData(address: string) {
-  const res = await fetch(
-    `https://api.dexscreener.com/latest/dex/tokens/${address}`,
-    { next: { revalidate: 0 } }
-  );
+  const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
   const data = await res.json();
-  
-  // En yüksek hacimli pair'i al
   const pairs = data.pairs || [];
-  const best = pairs.sort((a: any, b: any) => 
-    (b.volume?.h24 || 0) - (a.volume?.h24 || 0)
-  )[0];
-
+  const best = pairs.sort((a: any, b: any) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
   if (!best) return null;
-
   return {
     priceUsd: parseFloat(best.priceUsd || "0"),
     priceChange: {
@@ -43,32 +36,38 @@ async function fetchStockData(address: string) {
     },
     liquidity: best.liquidity?.usd || 0,
     dexId: best.dexId,
-    pairAddress: best.pairAddress,
   };
 }
 
-export async function GET(req: NextRequest) {
-  try {
-    const results = await Promise.all(
-      STOCKS.map(async (stock) => {
-        const data = await fetchStockData(stock.address);
-        return {
-          symbol: stock.symbol,
-          name: stock.name,
-          address: stock.address,
-          fetchedAt: new Date().toISOString(),
-          ...data,
-        };
-      })
-    );
+const server = createX402Server();
 
-    return NextResponse.json({
-      stocks: results,
-      fetchedAt: new Date().toISOString(),
-      source: "DexScreener · Base Mainnet",
-      disclaimer: "Not financial advice. Data reflects onchain DEX activity only.",
-    });
-  } catch (e) {
-    return NextResponse.json({ error: "Failed to fetch stock data" }, { status: 500 });
-  }
-}
+const handler = async (req: NextRequest): Promise<NextResponse> => {
+  const results = await Promise.all(
+    STOCKS.map(async (stock) => {
+      const data = await fetchStockData(stock.address);
+      return { symbol: stock.symbol, name: stock.name, address: stock.address, fetchedAt: new Date().toISOString(), ...data };
+    })
+  );
+  return NextResponse.json({
+    stocks: results,
+    fetchedAt: new Date().toISOString(),
+    source: "DexScreener · Base Mainnet · Coinbase Tokenized Stocks",
+    disclaimer: "Not financial advice. Data reflects onchain DEX activity only.",
+  });
+};
+
+export const GET = withX402(
+  handler,
+  {
+    accepts: {
+      scheme: "exact",
+      price: "$0.005",
+      network: x402Config.network,
+      payTo: x402Config.payTo,
+      extra: { builderCode: x402Config.builderCode },
+    },
+    description: "Base Daily Brief — Tokenized Stocks onchain data (NVDAc, METAc, AAPLc, GOOGLc)",
+    mimeType: "application/json",
+  },
+  server
+);
