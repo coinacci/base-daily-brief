@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useEffect, useState } from "react";
+import { StocksTicker } from "@/components/StocksTicker";
 import type { BulletinMeta } from "@/lib/bulletins";
 
 export default function HomePage() {
@@ -33,6 +34,8 @@ export default function HomePage() {
   return (
     <main style={{ background: "var(--surface-2)", minHeight: "100vh", color: "var(--text-primary)" }}>
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: isMobile ? "1rem" : "2rem 1.5rem" }}>
+
+        <StocksTicker />
 
         {/* Top bar */}
         <div style={{ borderTop: "3px solid var(--text-primary)", borderBottom: "1px solid var(--border-strong)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", marginBottom: "10px" }}>
