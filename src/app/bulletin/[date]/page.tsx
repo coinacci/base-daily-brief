@@ -56,7 +56,7 @@ function parseBulletin(content: string): ParsedBulletin {
         else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters") || t.startsWith("**Etki:**") || t.startsWith("**Impact:**")) { }
         else if (t.length > 0 && !t.startsWith("#")) {
           if (t.includes("önemli") || t.includes("matters") || t.includes("relevant") || t.includes("critical") || t.includes("agent") || t.includes("x402")) {
-            if (t.trim()) currentItem.body.push(t.trim());
+            currentItem.body += t + " ";
           } else { 
             const cleaned = t.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
             currentItem.body += cleaned + " "; 
