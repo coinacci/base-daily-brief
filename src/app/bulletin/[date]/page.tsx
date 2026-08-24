@@ -86,7 +86,7 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
       {item.head && <div style={ITEM_HEAD}>{item.head}</div>}
       {item.source && <div style={ITEM_SOURCE}>{item.source}</div>}
       {item.quote && <div style={ITEM_QUOTE}>"{item.quote}"</div>}
-      {item.body && <div style={ITEM_BODY}>{item.body.trim()}</div>}
+      {item.body && item.body.trim().split("  ").map((para, i) => para.trim() && <div key={i} style={{...ITEM_BODY, marginBottom: "8px"}}>{para.trim()}</div>)}
       {item.why && <div style={ITEM_WHY}>{item.why.trim()}</div>}
     </div>
   );
