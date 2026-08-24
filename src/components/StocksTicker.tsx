@@ -41,7 +41,7 @@ export function StocksTicker() {
             return {
               symbol: token.symbol,
               name: token.name,
-              priceUsd: parseFloat(best.priceUsd || "0"),
+              priceUsd: best.priceUsd ? parseFloat(best.priceUsd) : 0,
               priceChange: { h24: best.priceChange?.h24 || 0 },
             };
           } catch {
