@@ -72,7 +72,7 @@ export function StocksTicker() {
       <div style={{
         display: "flex",
         gap: 0,
-        animation: "ticker 60s linear infinite",
+        animation: "ticker 35s linear infinite",
         whiteSpace: "nowrap",
       }}>
         {items.map((asset, i) => (
