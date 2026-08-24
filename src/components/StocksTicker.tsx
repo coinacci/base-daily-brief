@@ -69,11 +69,11 @@ export function StocksTicker() {
       padding: "5px 0",
       position: "relative",
     }}>
-      <div style={{
+      <div id="ticker-track" style={{
         display: "flex",
         gap: 0,
-        animation: "ticker 20s linear infinite",
         whiteSpace: "nowrap",
+        willChange: "transform",
       }}>
         {items.map((asset, i) => (
           <div key={i} style={{
@@ -111,11 +111,25 @@ export function StocksTicker() {
         ))}
       </div>
       <style>{`
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        #ticker-track {
+          display: inline-flex;
         }
       `}</style>
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function() {
+          var track = document.getElementById('ticker-track');
+          if (!track) return;
+          var pos = 0;
+          function animate() {
+            pos -= 1;
+            var half = track.scrollWidth / 2;
+            if (Math.abs(pos) >= half) pos = 0;
+            track.style.transform = 'translateX(' + pos + 'px)';
+            requestAnimationFrame(animate);
+          }
+          animate();
+        })();
+      `}} />
     </div>
   );
 }
