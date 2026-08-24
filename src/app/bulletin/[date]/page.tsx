@@ -10,7 +10,7 @@ import type { Bulletin } from "@/lib/bulletins";
 
 const PAY_TO = "0x33661B8496075c3b8b2B69CB3E03BC3436808d78";
 
-type Item = { head: string; source: string; quote: string; body: string; why: string; };
+type Item = { head: string; source: string; quote: string; body: string[]; why: string; };
 type Section = { type: string; label: string; items: Item[]; };
 type ParsedBulletin = { highlights: string[]; sections: Section[]; sources: { num: number; url: string }[]; disclaimer: string; };
 
@@ -37,7 +37,7 @@ function parseBulletin(content: string): ParsedBulletin {
     if (t.startsWith("## 🚀") || t.includes("LAUNCH")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "launches", label: "Launches", items: [] }; continue; }
     if (t.startsWith("## 🌐") || t.includes("ECOSYSTEM")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "ecosystem", label: "Ecosystem", items: [] }; continue; }
     if (t.startsWith("## 🤖") || t.includes("AGENT")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "agents", label: "Agents & x402", items: [] }; continue; }
-    if (t.startsWith("## 🔦") || t.includes("SPOTLIGHT")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "spotlight", label: "Project Spotlight", items: [] }; currentItem = { head: "", source: "", quote: "", body: "", why: "" }; continue; }
+    if (t.startsWith("## 🔦") || t.includes("SPOTLIGHT")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "spotlight", label: "Project Spotlight", items: [] }; currentItem = { head: "", source: "", quote: "", body: [], why: "" }; continue; }
     if (t.startsWith("## 📌")) { inHighlights = false; inSources = false; pushSection(); continue; }
     if (t.includes("**Kaynaklar**") || t.includes("**Sources**")) { inHighlights = false; inSources = true; pushSection(); continue; }
     if (t.startsWith("*") && t.endsWith("*") && t.length > 10 && !t.startsWith("**")) { disclaimer = t.replace(/\*/g, ""); continue; }
@@ -47,7 +47,7 @@ function parseBulletin(content: string): ParsedBulletin {
     if (inSources && t.startsWith("- http")) { sources.push({ num: sourceNum++, url: t.slice(2).trim() }); continue; }
 
     if (currentSection) {
-      if (t.startsWith("### ")) { pushItem(); currentItem = { head: t.slice(4), source: "", quote: "", body: "", why: "" }; continue; }
+      if (t.startsWith("### ")) { pushItem(); currentItem = { head: t.slice(4), source: "", quote: "", body: [], why: "" }; continue; }
       if (currentItem) {
         if (t.startsWith("**Kaynak:**") || t.startsWith("**Source:**")) {
           const raw = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim();
@@ -56,10 +56,10 @@ function parseBulletin(content: string): ParsedBulletin {
         else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters") || t.startsWith("**Etki:**") || t.startsWith("**Impact:**")) { }
         else if (t.length > 0 && !t.startsWith("#")) {
           if (t.includes("önemli") || t.includes("matters") || t.includes("relevant") || t.includes("critical") || t.includes("agent") || t.includes("x402")) {
-            currentItem.why += t + " ";
+            if (t.trim()) currentItem.body.push(t.trim());
           } else { 
             const cleaned = t.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
-            currentItem.body += cleaned + " "; 
+            if (cleaned.trim()) currentItem.body.push(cleaned.trim()); 
           }
         }
       } else if (t.startsWith("- ") && currentSection) {
@@ -86,8 +86,8 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
       {item.head && <div style={ITEM_HEAD}>{item.head}</div>}
       {item.source && <div style={ITEM_SOURCE}>{item.source}</div>}
       {item.quote && <div style={ITEM_QUOTE}>"{item.quote}"</div>}
-      {item.body && item.body.trim().split("  ").map((para, i) => para.trim() && <div key={i} style={{...ITEM_BODY, marginBottom: "8px"}}>{para.trim()}</div>)}
-      {item.why && <div style={ITEM_WHY}>{item.why.trim()}</div>}
+      {item.body && item.body.length > 0 && item.body.map((para, i) => <div key={i} style={{...ITEM_BODY, marginBottom: "8px"}}>{para}</div>)}
+      
     </div>
   );
 }
