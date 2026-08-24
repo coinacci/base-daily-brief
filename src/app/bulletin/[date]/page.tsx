@@ -63,7 +63,7 @@ function parseBulletin(content: string): ParsedBulletin {
           }
         }
       } else if (t.startsWith("- ") && currentSection) {
-        currentSection.items.push({ head: "", source: "", quote: "", body: t.slice(2).replace(/\*\*/g, ""), why: "" });
+        currentSection.items.push({ head: "", source: "", quote: "", body: [t.slice(2).replace(/\*\*/g, "")], why: "" });
       }
     }
   }
