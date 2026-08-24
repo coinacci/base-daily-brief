@@ -53,7 +53,7 @@ function parseBulletin(content: string): ParsedBulletin {
           const raw = t.replace(/\*\*Kaynak:\*\*|\*\*Source:\*\*/g, "").trim();
           currentItem.source = raw.replace(/\(https?:\/\/[^)]+\)/g, "").trim();
         } else if (t.startsWith("> ")) { currentItem.quote = t.slice(2); }
-        else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters")) { }
+        else if (t.startsWith("**Özet:**") || t.startsWith("**Summary:**") || t.startsWith("**Neden önemli?**") || t.startsWith("**Why it matters") || t.startsWith("**Etki:**") || t.startsWith("**Impact:**")) { }
         else if (t.length > 0 && !t.startsWith("#")) {
           if (t.includes("önemli") || t.includes("matters") || t.includes("relevant") || t.includes("critical") || t.includes("agent") || t.includes("x402")) {
             currentItem.why += t + " ";
