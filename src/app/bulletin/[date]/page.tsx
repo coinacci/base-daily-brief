@@ -36,7 +36,7 @@ function parseBulletin(content: string): ParsedBulletin {
     if (t.startsWith("## 📊") || t.includes("STATS")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "stats", label: "Stats", items: [] }; continue; }
     if (t.startsWith("## 🚀") || t.includes("LAUNCH")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "launches", label: "Launches", items: [] }; continue; }
     if (t.startsWith("## 🌐") || t.includes("ECOSYSTEM")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "ecosystem", label: "Ecosystem", items: [] }; continue; }
-    if (t.startsWith("## 🤖") || t.includes("AGENT")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "agents", label: "Agents & x402", items: [] }; continue; }
+    if (t.startsWith("## 🤖") || t.startsWith("## 🔧") || t.includes("AGENT") || t.includes("DEV")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "agents", label: "Agents & x402", items: [] }; continue; }
     if (t.startsWith("## 🔦") || t.includes("SPOTLIGHT")) { inHighlights = false; inSources = false; pushSection(); currentSection = { type: "spotlight", label: "Project Spotlight", items: [] }; currentItem = { head: "", source: "", quote: "", body: [], why: "" }; continue; }
     if (t.startsWith("## 📌")) { inHighlights = false; inSources = false; pushSection(); continue; }
     if (t.includes("**Kaynaklar**") || t.includes("**Sources**")) { inHighlights = false; inSources = true; pushSection(); continue; }
