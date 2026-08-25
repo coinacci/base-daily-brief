@@ -254,7 +254,7 @@ export default function BulletinDetailPage() {
 
       {(statsSec.length > 0 || launchSec.length > 0) && (
         <div style={BOX}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : (statsSec.length > 0 && launchSec.length > 0 ? "1fr 0.5px 1fr" : "1fr"), gap: 0 }}>
             <div>
               {statsSec.map((sec, si) => (
                 <div key={si}>
@@ -278,7 +278,7 @@ export default function BulletinDetailPage() {
 
       {(ecoSec.length > 0 || agentSec.length > 0) && (
         <div style={BOX}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 0.5px 1fr", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : (ecoSec.length > 0 && agentSec.length > 0 ? "1fr 0.5px 1fr" : "1fr"), gap: 0 }}>
             <div>
               {ecoSec.map((sec, si) => (
                 <div key={si}>
