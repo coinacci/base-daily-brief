@@ -223,33 +223,49 @@ export default function BulletinDetailPage() {
           <div style={{ fontFamily: "monospace", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)" }}>$0.01</div>
           <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>USDC · Base Mainnet</div>
         </div>
-        <X402PayButton
-          payTo={PAY_TO} amount="$0.01" date={date} locale={locale}
-          onSuccess={(data) => {
-            const b = data as Bulletin;
-            setBulletin(b); setParsed(parseBulletin(b.content));
-            setPaymentRequired(false); setLoading(false);
-          }}
-        />
-        <div style={{ marginTop: "24px", borderTop: "1px solid var(--border)", paddingTop: "20px" }}>
-          <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "10px" }}>
-            {locale === "tr" ? "Ya da 30 günlük abonelik al" : "Or subscribe for 30 days"}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1px 1fr", gap: 0, border: "1px solid var(--border-strong)", marginTop: "32px" }}>
+          {/* Sol: Per bulletin */}
+          <div style={{ padding: "24px", textAlign: "center" }}>
+            <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+              {locale === "tr" ? "Tek seferlik" : "Single issue"}
+            </div>
+            <div style={{ fontFamily: "monospace", fontSize: "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.01</div>
+            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: "16px" }}>
+              USDC · {locale === "tr" ? "Bugün geçerli" : "Valid all day"}
+            </div>
+            <X402PayButton
+              payTo={PAY_TO} amount="$0.01" date={date} locale={locale}
+              onSuccess={(data) => {
+                const b = data as Bulletin;
+                setBulletin(b); setParsed(parseBulletin(b.content));
+                setPaymentRequired(false); setLoading(false);
+              }}
+            />
           </div>
-          <div style={{ display: "inline-block", border: "1px solid var(--border-strong)", padding: "12px 24px", marginBottom: "12px" }}>
-            <div style={{ fontFamily: "monospace", fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>$0.25</div>
-            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>USDC · 30 {locale === "tr" ? "gün · tekrar ödeme yok" : "days · no repeat payments"}</div>
+          {/* Ayırıcı */}
+          {!isMobile && <div style={{ background: "var(--border-strong)" }}></div>}
+          {isMobile && <div style={{ height: "1px", background: "var(--border-strong)" }}></div>}
+          {/* Sağ: Abonelik */}
+          <div style={{ padding: "24px", textAlign: "center" }}>
+            <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-accent)", marginBottom: "12px" }}>
+              {locale === "tr" ? "30 günlük abonelik" : "30-day subscription"}
+            </div>
+            <div style={{ fontFamily: "monospace", fontSize: "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.25</div>
+            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: "16px" }}>
+              USDC · {locale === "tr" ? "Tekrar ödeme yok" : "No repeat payments"}
+            </div>
+            <X402PayButton
+              payTo={PAY_TO} amount="$0.25" date={date} locale={locale}
+              isSubscribe={true}
+              onSuccess={(data: any) => {
+                if (data?.apiKey) {
+                  setApiKey(data.apiKey);
+                  loadBulletinWithKey(data.apiKey);
+                  setPaymentRequired(false);
+                }
+              }}
+            />
           </div>
-          <X402PayButton
-            payTo={PAY_TO} amount="$0.25" date={date} locale={locale}
-            isSubscribe={true}
-            onSuccess={(data: any) => {
-              if (data?.apiKey) {
-                setApiKey(data.apiKey);
-                loadBulletinWithKey(data.apiKey);
-                setPaymentRequired(false);
-              }
-            }}
-          />
         </div>
       </div>
     </Layout>
