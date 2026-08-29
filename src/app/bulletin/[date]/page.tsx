@@ -222,12 +222,12 @@ export default function BulletinDetailPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1px 1fr", gap: 0, border: "1px solid var(--border-strong)", marginTop: "32px" }}>
           {/* Sol: Per bulletin */}
-          <div style={{ padding: isMobile ? "16px 12px" : "24px", textAlign: "center" }}>
-            <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+          <div style={{ padding: isMobile ? "12px 8px" : "24px", textAlign: "center" }}>
+            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "8px" : "10px", letterSpacing: isMobile ? "0.05em" : "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: isMobile ? "8px" : "12px" }}>
               {locale === "tr" ? "Tek seferlik" : "Single issue"}
             </div>
-            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "24px" : "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.01</div>
-            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: "16px" }}>
+            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "20px" : "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.01</div>
+            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "9px" : "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: isMobile ? "10px" : "16px" }}>
               USDC · {locale === "tr" ? "Bugün geçerli" : "Valid all day"}
             </div>
             <X402PayButton
@@ -242,12 +242,12 @@ export default function BulletinDetailPage() {
           {/* Ayırıcı */}
           <div style={{ background: "var(--border-strong)" }}></div>
           {/* Sağ: Abonelik */}
-          <div style={{ padding: isMobile ? "16px 12px" : "24px", textAlign: "center" }}>
+          <div style={{ padding: isMobile ? "12px 8px" : "24px", textAlign: "center" }}>
             <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-accent)", marginBottom: "12px" }}>
               {locale === "tr" ? "30 günlük abonelik" : "30-day subscription"}
             </div>
-            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "24px" : "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.25</div>
-            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: "16px" }}>
+            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "20px" : "32px", fontWeight: 700, color: "var(--text-primary)" }}>$0.25</div>
+            <div style={{ fontFamily: "monospace", fontSize: isMobile ? "9px" : "10px", color: "var(--text-muted)", marginTop: "4px", marginBottom: isMobile ? "10px" : "16px" }}>
               USDC · {locale === "tr" ? "Tekrar ödeme yok" : "No repeat payments"}
             </div>
             <X402PayButton
