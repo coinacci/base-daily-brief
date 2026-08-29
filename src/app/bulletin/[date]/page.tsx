@@ -219,10 +219,7 @@ export default function BulletinDetailPage() {
         <div style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "italic", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
           {locale === "tr" ? "Bugün bir kez öde, gün boyu tekrar ödeme yapma." : "Pay once today, read all day without paying again."}
         </div>
-        <div style={{ display: "inline-block", border: "1.5px solid var(--text-primary)", padding: "16px 32px", marginBottom: "32px" }}>
-          <div style={{ fontFamily: "monospace", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)" }}>$0.01</div>
-          <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>USDC · Base Mainnet</div>
-        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1px 1fr", gap: 0, border: "1px solid var(--border-strong)", marginTop: "32px" }}>
           {/* Sol: Per bulletin */}
           <div style={{ padding: "24px", textAlign: "center" }}>
