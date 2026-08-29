@@ -92,7 +92,7 @@ export default function HomePage() {
 
               <Link href={`/bulletin/${latest.date}`} style={{ textDecoration: "none", display: "block" }}>
                 <div style={{ background: "var(--text-primary)", color: "var(--surface-2)", fontFamily: "Georgia, serif", fontSize: isMobile ? "15px" : "17px", fontWeight: 900, padding: "16px 20px", textAlign: "center", cursor: "pointer" }}>
-                  {locale === "tr" ? "Bülteni Oku — $0.01 USDC Öde →" : "Read Bulletin — Pay $0.01 USDC →"}
+                  {locale === "tr" ? "Bülteni Oku →" : "Read Bulletin →"}
                 </div>
               </Link>
               <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", textAlign: "center", marginTop: "6px" }}>
@@ -120,7 +120,7 @@ export default function HomePage() {
                             <div style={{ fontFamily: "Georgia, serif", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5, fontStyle: "italic", marginBottom: "4px" }}>{b.summary}</div>
                           )}
                           <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>
-                            {b.date} · <strong>$0.01 USDC</strong>
+                            {b.date} · <strong>Read →</strong>
                           </div>
                         </div>
                       </Link>
