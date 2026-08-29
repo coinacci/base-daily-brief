@@ -57,7 +57,7 @@ export default function HomePage() {
         {!loading && latest && (
           <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--border)", padding: "5px 0", marginBottom: "16px", gap: "12px" }}>
             <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{latest.summary?.slice(0, isMobile ? 50 : 90)}...</span>
-            <span style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-secondary)", flexShrink: 0 }}>$0.01 USDC</span>
+            
           </div>
         )}
 
