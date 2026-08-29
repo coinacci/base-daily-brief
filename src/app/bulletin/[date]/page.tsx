@@ -100,6 +100,7 @@ export default function BulletinDetailPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedBulletin | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -109,6 +110,19 @@ export default function BulletinDetailPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  function loadBulletinWithKey(key: string) {
+    setLoading(true); setNotFound(false); setPaymentRequired(false);
+    fetch(`/api/bulletins/${date}?locale=${locale}`, {
+      headers: { "X-API-Key": key }
+    })
+      .then((r) => {
+        if (r.status === 401) { setPaymentRequired(true); setLoading(false); return null; }
+        if (r.status === 404) { setNotFound(true); setLoading(false); return null; }
+        return r.json();
+      })
+      .then((data) => { if (data) { setBulletin(data); setParsed(parseBulletin(data.content)); setLoading(false); } });
+  }
 
   function loadBulletin(walletAddress?: string) {
     setLoading(true); setNotFound(false); setPaymentRequired(false);
@@ -132,7 +146,36 @@ export default function BulletinDetailPage() {
       }
       return null;
     };
-    loadBulletin(checkLocal() ?? undefined);
+
+    // Önce localStorage'da günlük ödeme var mı kontrol et
+    const localWallet = checkLocal();
+    if (localWallet) {
+      loadBulletin(localWallet);
+      return;
+    }
+
+    // Cüzdan bağlıysa abonelik kontrolü yap
+    async function checkSubscription() {
+      if (typeof window === "undefined") return;
+      const provider = (window as any).ethereum;
+      if (!provider) { loadBulletin(); return; }
+      try {
+        const accounts = await provider.request({ method: "eth_accounts" });
+        if (!accounts?.[0]) { loadBulletin(); return; }
+        const wallet = accounts[0].toLowerCase();
+        const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
+        const data = await res.json();
+        if (data.active && data.apiKey) {
+          setApiKey(data.apiKey);
+          loadBulletinWithKey(data.apiKey);
+        } else {
+          loadBulletin();
+        }
+      } catch {
+        loadBulletin();
+      }
+    }
+    checkSubscription();
   }, [date, locale]);
 
   const Layout = ({ children }: { children: React.ReactNode }) => (
@@ -188,6 +231,26 @@ export default function BulletinDetailPage() {
             setPaymentRequired(false); setLoading(false);
           }}
         />
+        <div style={{ marginTop: "24px", borderTop: "1px solid var(--border)", paddingTop: "20px" }}>
+          <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "10px" }}>
+            {locale === "tr" ? "Ya da 30 günlük abonelik al" : "Or subscribe for 30 days"}
+          </div>
+          <div style={{ display: "inline-block", border: "1px solid var(--border-strong)", padding: "12px 24px", marginBottom: "12px" }}>
+            <div style={{ fontFamily: "monospace", fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>$0.25</div>
+            <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>USDC · 30 {locale === "tr" ? "gün · tekrar ödeme yok" : "days · no repeat payments"}</div>
+          </div>
+          <X402PayButton
+            payTo={PAY_TO} amount="$0.25" date={date} locale={locale}
+            isSubscribe={true}
+            onSuccess={(data: any) => {
+              if (data?.apiKey) {
+                setApiKey(data.apiKey);
+                loadBulletinWithKey(data.apiKey);
+                setPaymentRequired(false);
+              }
+            }}
+          />
+        </div>
       </div>
     </Layout>
   );

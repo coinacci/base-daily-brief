@@ -14,9 +14,10 @@ interface Props {
   date: string;
   locale: string;
   onSuccess: (data: unknown) => void;
+  isSubscribe?: boolean;
 }
 
-export function X402PayButton({ date, locale, onSuccess }: Props) {
+export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: Props) {
   const { connect } = useConnect();
   const connectors = useConnectors();
   const { address, isConnected } = useAccount();
@@ -108,8 +109,10 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
-      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`, {
-        headers: { "x-wallet-address": addr },
+      const endpoint = isSubscribe ? "/api/subscribe" : `/api/bulletins/${date}?locale=${locale}`;
+      const res = await fetchWithPay(endpoint, {
+        method: isSubscribe ? "POST" : "GET",
+        headers: isSubscribe ? {} : { "x-wallet-address": addr },
       });
 
       if (res.ok) {
@@ -148,8 +151,10 @@ export function X402PayButton({ date, locale, onSuccess }: Props) {
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
-      const res = await fetchWithPay(`/api/bulletins/${date}?locale=${locale}`, {
-        headers: { "x-wallet-address": address },
+      const endpoint = isSubscribe ? "/api/subscribe" : `/api/bulletins/${date}?locale=${locale}`;
+      const res = await fetchWithPay(endpoint, {
+        method: isSubscribe ? "POST" : "GET",
+        headers: isSubscribe ? {} : { "x-wallet-address": address },
       });
 
       if (res.ok) {

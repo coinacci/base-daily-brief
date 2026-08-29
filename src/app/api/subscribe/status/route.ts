@@ -1,47 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSubscription, redis } from "@/lib/redis";
+import { redis } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const apiKey = req.nextUrl.searchParams.get("key");
+  const wallet = req.nextUrl.searchParams.get("wallet");
 
-  if (!apiKey) {
-    return NextResponse.json({ error: "Missing key parameter" }, { status: 400 });
+  if (!wallet) {
+    return NextResponse.json({ error: "wallet parameter required" }, { status: 400 });
   }
 
-  const subscription = await getSubscription(apiKey);
+  try {
+    // Cüzdana bağlı apiKey'i bul
+    const apiKey = await redis.get<string>(`wallet:sub:${wallet.toLowerCase()}`);
+    if (!apiKey) {
+      return NextResponse.json({ active: false });
+    }
 
-  if (!subscription) {
-    return NextResponse.json(
-      { error: "Invalid or expired API key" },
-      { status: 404 }
-    );
+    // Abonelik bilgisini al
+    const sub = await redis.get<any>(`sub:${apiKey}`);
+    if (!sub) {
+      return NextResponse.json({ active: false });
+    }
+
+    const now = Date.now();
+    if (sub.expiresAt < now) {
+      return NextResponse.json({ active: false });
+    }
+
+    return NextResponse.json({
+      active: true,
+      apiKey,
+      expiresAt: new Date(sub.expiresAt).toISOString(),
+      daysLeft: Math.ceil((sub.expiresAt - now) / (1000 * 60 * 60 * 24)),
+    });
+  } catch {
+    return NextResponse.json({ error: "Failed to check subscription" }, { status: 500 });
   }
-
-  // Bugünkü kullanım sayısını al
-  const today = new Date().toISOString().slice(0, 10);
-  const usageKey = `rate:${apiKey}:${today}`;
-  const usedToday = (await redis.get<number>(usageKey)) ?? 0;
-  const dailyLimit = parseInt(process.env.SUBSCRIBE_DAILY_LIMIT ?? "5");
-
-  const now = Date.now();
-  const msLeft = subscription.expiresAt - now;
-  const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
-
-  // Gece yarısına kadar kalan süre
-  const midnight = new Date();
-  midnight.setUTCHours(24, 0, 0, 0);
-  const retryAfter = Math.ceil((midnight.getTime() - now) / 1000);
-
-  return NextResponse.json({
-    valid: true,
-    expiresAt: new Date(subscription.expiresAt).toISOString(),
-    daysLeft,
-    dailyLimit,
-    usedToday,
-    remainingToday: Math.max(0, dailyLimit - usedToday),
-    resetsAt: midnight.toISOString(),
-    retryAfter,
-  });
 }

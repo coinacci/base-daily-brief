@@ -44,6 +44,11 @@ export async function saveSubscription(
   const ttlSeconds = days * 24 * 60 * 60;
   await redis.set(`sub:${apiKey}`, data, { ex: ttlSeconds });
 
+  // cüzdan → apiKey mapping
+  if (payerAddress && payerAddress !== "unknown") {
+    await redis.set(`wallet:sub:${payerAddress.toLowerCase()}`, apiKey, { ex: ttlSeconds });
+  }
+
   if (callbackUrl) {
     await redis.sadd("webhooks:active", apiKey);
   }
