@@ -188,7 +188,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid var(--text-primary)", padding: "12px 28px", background: paying ? "var(--border)" : "var(--text-primary)", color: "var(--surface-2)", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >
-          {paying ? (locale === "tr" ? "İşleniyor..." : "Processing...") : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
+          {paying ? (locale === "tr" ? "İşleniyor..." : "Processing...") : isSubscribe ? (locale === "tr" ? "Abone Ol — $0.25 USDC" : "Subscribe — $0.25 USDC") : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
         </button>
         {error && <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>{error}</p>}
       </div>
@@ -211,7 +211,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           disabled={paying}
           style={{ fontFamily: "monospace", fontSize: "12px", border: "1.5px solid var(--text-primary)", padding: "12px 28px", background: paying ? "var(--border)" : "var(--text-primary)", color: "var(--surface-2)", cursor: paying ? "not-allowed" : "pointer", letterSpacing: "0.08em" }}
         >
-          {paying ? (locale === "tr" ? "İşleniyor..." : "Processing...") : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
+          {paying ? (locale === "tr" ? "İşleniyor..." : "Processing...") : isSubscribe ? (locale === "tr" ? "Abone Ol — $0.25 USDC" : "Subscribe — $0.25 USDC") : (locale === "tr" ? "Öde — $0.01 USDC" : "Pay — $0.01 USDC")}
         </button>
         {error && <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#c0392b", marginTop: "8px" }}>{error}</p>}
       </div>
