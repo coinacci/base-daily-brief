@@ -101,6 +101,7 @@ export default function BulletinDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedBulletin | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -122,6 +123,23 @@ export default function BulletinDetailPage() {
         return r.json();
       })
       .then((data) => { if (data) { setBulletin(data); setParsed(parseBulletin(data.content)); setLoading(false); } });
+  }
+
+  function loadBulletinWithKey(key: string) {
+    setLoading(true); setNotFound(false); setPaymentRequired(false);
+    fetch(`/api/bulletins/${date}?locale=${locale}`, {
+      headers: { "X-API-Key": key }
+    })
+      .then((r) => {
+        if (r.status === 401 || r.status === 429) {
+          setPaymentRequired(true); setLoading(false); return null;
+        }
+        if (r.status === 404) { setNotFound(true); setLoading(false); return null; }
+        return r.json();
+      })
+      .then((data) => {
+        if (data) { setBulletin(data); setParsed(parseBulletin(data.content)); setLoading(false); }
+      });
   }
 
   function loadBulletin(walletAddress?: string) {
