@@ -101,7 +101,6 @@ export default function BulletinDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [apiKey, setApiKey] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedBulletin | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
