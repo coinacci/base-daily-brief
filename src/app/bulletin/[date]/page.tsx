@@ -1,6 +1,4 @@
 "use client";
-// @ts-ignore
-import sdk from "@farcaster/miniapp-sdk";
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
@@ -175,18 +173,7 @@ export default function BulletinDetailPage() {
         return false;
       }
 
-      // 1. Farcaster wallet
-      try {
-        const accounts = await sdk.wallet.ethProvider.request({ method: "eth_accounts" });
-        if (accounts?.[0]) {
-          const found = await checkWallet(accounts[0]);
-          if (found) return;
-          loadBulletin(accounts[0].toLowerCase());
-          return;
-        }
-      } catch {}
-
-      // 2. Normal EVM wallet
+      // Normal EVM wallet
       try {
         const provider = (window as any).ethereum;
         if (provider) {
@@ -203,10 +190,7 @@ export default function BulletinDetailPage() {
       // 3. Hiçbiri yoksa direkt yükle
       loadBulletin();
     }
-    // SDK hazır olduktan sonra kontrol et
-    sdk.actions.ready().catch(() => {}).finally(() => {
-      checkSubscription();
-    });
+    checkSubscription();
   }, [date, locale]);
 
   const Layout = ({ children }: { children: React.ReactNode }) => (
