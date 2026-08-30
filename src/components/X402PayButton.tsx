@@ -72,19 +72,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
         return;
       }
       const accounts = await provider.request({ method: "eth_requestAccounts" });
-      if (accounts?.[0]) {
-        setEvmAddress(accounts[0]);
-        localStorage.setItem("connectedWallet", accounts[0].toLowerCase());
-        // Cüzdan bağlandıktan sonra abonelik kontrolü yap
-        if (!isSubscribe) {
-          const res = await fetch(`/api/subscribe/status?wallet=${accounts[0].toLowerCase()}`);
-          const data = await res.json();
-          if (data.active && data.apiKey) {
-            onSuccess({ apiKey: data.apiKey, _subscriptionRedirect: true });
-            return;
-          }
-        }
-      }
+      if (accounts?.[0]) setEvmAddress(accounts[0]);
     } catch {
       setError(locale === "tr" ? "Cüzdan bağlantısı reddedildi" : "Wallet connection rejected");
     }
@@ -129,16 +117,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
 
       if (res.ok) {
         const data = await res.json();
-        if (isSubscribe && data?.apiKey) {
-          // Cüzdan adresini apiKey ile otomatik ilişkilendir
-          await fetch("/api/subscribe/link", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ apiKey: data.apiKey, walletAddress: addr }),
-          }).catch(() => {});
-        } else {
-          localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
-        }
+        localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
         onSuccess(data);
       } else {
         throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
@@ -180,15 +159,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
 
       if (res.ok) {
         const data = await res.json();
-        if (isSubscribe && data?.apiKey) {
-          await fetch("/api/subscribe/link", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ apiKey: data.apiKey, walletAddress: address }),
-          }).catch(() => {});
-        } else {
-          localStorage.setItem(`paid:${address.toLowerCase()}:${date}`, "1");
-        }
+        localStorage.setItem(`paid:${address.toLowerCase()}:${date}`, "1");
         onSuccess(data);
       } else {
         throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");

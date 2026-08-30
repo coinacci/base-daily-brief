@@ -111,19 +111,6 @@ export default function BulletinDetailPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  async function checkAndLoadWithSubscription(walletAddr: string) {
-    try {
-      const res = await fetch(`/api/subscribe/status?wallet=${walletAddr.toLowerCase()}`);
-      const data = await res.json();
-      if (data.active && data.apiKey) {
-        setApiKey(data.apiKey);
-        loadBulletinWithKey(data.apiKey);
-        return true;
-      }
-    } catch {}
-    return false;
-  }
-
   function loadBulletinWithKey(key: string) {
     setLoading(true); setNotFound(false); setPaymentRequired(false);
     fetch(`/api/bulletins/${date}?locale=${locale}`, {
@@ -169,38 +156,20 @@ export default function BulletinDetailPage() {
 
     // Cüzdan bağlıysa abonelik kontrolü yap
     async function checkSubscription() {
-      if (typeof window === "undefined") { loadBulletin(); return; }
-
-      // localStorage'da kayıtlı wallet adresi var mı?
-      const savedWallet = localStorage.getItem("connectedWallet");
-      if (savedWallet) {
-        const res = await fetch(`/api/subscribe/status?wallet=${savedWallet}`);
-        const data = await res.json();
-        if (data.active && data.apiKey) {
-          setApiKey(data.apiKey);
-          loadBulletinWithKey(data.apiKey);
-          return;
-        }
-      }
-
-      // Tüm olası provider'ları dene
-      const provider = (window as any).ethereum || (window as any).coinbaseWalletExtension;
+      if (typeof window === "undefined") return;
+      const provider = (window as any).ethereum;
       if (!provider) { loadBulletin(); return; }
-
       try {
         const accounts = await provider.request({ method: "eth_accounts" });
         if (!accounts?.[0]) { loadBulletin(); return; }
-
         const wallet = accounts[0].toLowerCase();
-        localStorage.setItem("connectedWallet", wallet);
         const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
         const data = await res.json();
-
         if (data.active && data.apiKey) {
           setApiKey(data.apiKey);
           loadBulletinWithKey(data.apiKey);
         } else {
-          loadBulletin(wallet);
+          loadBulletin();
         }
       } catch {
         loadBulletin();
