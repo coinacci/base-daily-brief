@@ -93,8 +93,6 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
 }
 
 export default function BulletinDetailPage() {
-
-
   const { locale, t } = useLanguage();
   const params = useParams();
   const date = params.date as string;
@@ -156,39 +154,26 @@ export default function BulletinDetailPage() {
       return;
     }
 
-    // Abonelik kontrolü — önce Farcaster, sonra normal EVM
+    // Cüzdan bağlıysa abonelik kontrolü yap
     async function checkSubscription() {
-      if (typeof window === "undefined") { loadBulletin(); return; }
-
-      async function checkWallet(walletAddr: string) {
-        try {
-          const res = await fetch(`/api/subscribe/status?wallet=${walletAddr.toLowerCase()}`);
-          const data = await res.json();
-          if (data.active && data.apiKey) {
-            setApiKey(data.apiKey);
-            loadBulletinWithKey(data.apiKey);
-            return true;
-          }
-        } catch {}
-        return false;
-      }
-
-      // Normal EVM wallet
+      if (typeof window === "undefined") return;
+      const provider = (window as any).ethereum;
+      if (!provider) { loadBulletin(); return; }
       try {
-        const provider = (window as any).ethereum;
-        if (provider) {
-          const accounts = await provider.request({ method: "eth_accounts" });
-          if (accounts?.[0]) {
-            const found = await checkWallet(accounts[0]);
-            if (found) return;
-            loadBulletin(accounts[0].toLowerCase());
-            return;
-          }
+        const accounts = await provider.request({ method: "eth_accounts" });
+        if (!accounts?.[0]) { loadBulletin(); return; }
+        const wallet = accounts[0].toLowerCase();
+        const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
+        const data = await res.json();
+        if (data.active && data.apiKey) {
+          setApiKey(data.apiKey);
+          loadBulletinWithKey(data.apiKey);
+        } else {
+          loadBulletin();
         }
-      } catch {}
-
-      // 3. Hiçbiri yoksa direkt yükle
-      loadBulletin();
+      } catch {
+        loadBulletin();
+      }
     }
     checkSubscription();
   }, [date, locale]);
