@@ -95,9 +95,7 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
 }
 
 export default function BulletinDetailPage() {
-  useEffect(() => {
-    sdk.actions.ready().catch(() => {});
-  }, []);
+
 
   const { locale, t } = useLanguage();
   const params = useParams();
@@ -205,7 +203,10 @@ export default function BulletinDetailPage() {
       // 3. Hiçbiri yoksa direkt yükle
       loadBulletin();
     }
-    checkSubscription();
+    // SDK hazır olduktan sonra kontrol et
+    sdk.actions.ready().catch(() => {}).finally(() => {
+      checkSubscription();
+    });
   }, [date, locale]);
 
   const Layout = ({ children }: { children: React.ReactNode }) => (
