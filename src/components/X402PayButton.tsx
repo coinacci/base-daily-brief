@@ -117,7 +117,16 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
+        if (isSubscribe && data?.apiKey) {
+          // Cüzdan adresini apiKey ile otomatik ilişkilendir
+          await fetch("/api/subscribe/link", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ apiKey: data.apiKey, walletAddress: addr }),
+          }).catch(() => {});
+        } else {
+          localStorage.setItem(`paid:${addr.toLowerCase()}:${date}`, "1");
+        }
         onSuccess(data);
       } else {
         throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
@@ -159,7 +168,15 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem(`paid:${address.toLowerCase()}:${date}`, "1");
+        if (isSubscribe && data?.apiKey) {
+          await fetch("/api/subscribe/link", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ apiKey: data.apiKey, walletAddress: address }),
+          }).catch(() => {});
+        } else {
+          localStorage.setItem(`paid:${address.toLowerCase()}:${date}`, "1");
+        }
         onSuccess(data);
       } else {
         throw new Error(locale === "tr" ? "Ödeme sonrası içerik alınamadı" : "Failed to load content after payment");
