@@ -158,69 +158,26 @@ export default function BulletinDetailPage() {
       return;
     }
 
-    // Abonelik kontrolü
+    // Cüzdan bağlıysa abonelik kontrolü yap
     async function checkSubscription() {
-      if (typeof window === "undefined") { loadBulletin(); return; }
-
-      // Kayıtlı API key var mı?
-      const savedKey = localStorage.getItem("sub:apiKey");
-      const savedWallet = localStorage.getItem("sub:wallet");
-      if (savedKey && savedWallet) {
-        try {
-          const res = await fetch(`/api/subscribe/status?wallet=${savedWallet}`);
-          const data = await res.json();
-          if (data.active && data.apiKey) {
-            setApiKey(data.apiKey);
-            loadBulletinWithKey(data.apiKey);
-            return;
-          } else {
-            localStorage.removeItem("sub:apiKey");
-            localStorage.removeItem("sub:wallet");
-          }
-        } catch {}
-      }
-
-      async function tryProvider(provider: any): Promise<boolean> {
-        try {
-          const accounts = await provider.request({ method: "eth_accounts" });
-          if (accounts?.[0]) {
-            const wallet = accounts[0].toLowerCase();
-            const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
-            const data = await res.json();
-            if (data.active && data.apiKey) {
-              localStorage.setItem("sub:apiKey", data.apiKey);
-              localStorage.setItem("sub:wallet", wallet);
-              setApiKey(data.apiKey);
-              loadBulletinWithKey(data.apiKey);
-              return true;
-            }
-            loadBulletin(wallet);
-            return true;
-          }
-        } catch {}
-        return false;
-      }
-
-      // Farcaster / Base App wallet
+      if (typeof window === "undefined") return;
+      const provider = (window as any).ethereum;
+      if (!provider) { loadBulletin(); return; }
       try {
-        const { default: farcasterSdk } = await import("@farcaster/miniapp-sdk");
-        const done = await tryProvider(farcasterSdk.wallet.ethProvider);
-        if (done) return;
-      } catch {}
-
-      // window.ethereum ve diğer provider'lar
-      const providers = [
-        (window as any).ethereum,
-        (window as any).coinbaseWalletExtension,
-        (window as any).coinbaseWallet,
-      ].filter(Boolean);
-
-      for (const provider of providers) {
-        const done = await tryProvider(provider);
-        if (done) return;
+        const accounts = await provider.request({ method: "eth_accounts" });
+        if (!accounts?.[0]) { loadBulletin(); return; }
+        const wallet = accounts[0].toLowerCase();
+        const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
+        const data = await res.json();
+        if (data.active && data.apiKey) {
+          setApiKey(data.apiKey);
+          loadBulletinWithKey(data.apiKey);
+        } else {
+          loadBulletin();
+        }
+      } catch {
+        loadBulletin();
       }
-
-      loadBulletin();
     }
     checkSubscription();
   }, [date, locale]);
