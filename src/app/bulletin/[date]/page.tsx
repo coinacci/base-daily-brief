@@ -222,7 +222,8 @@ export default function BulletinDetailPage() {
         </div>
         <div style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "italic", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
           {locale === "tr" ? "Bugün bir kez öde, gün boyu tekrar ödeme yapma." : "Pay once today, read all day without paying again."}
-                <X402PayButton
+        </div>
+        <X402PayButton
           payTo={PAY_TO} amount="$0.01" date={date} locale={locale}
           onSuccess={(data) => {
             const b = data as Bulletin;
@@ -230,6 +231,7 @@ export default function BulletinDetailPage() {
             setPaymentRequired(false); setLoading(false);
           }}
         />
+      </div>
     </Layout>
   );
 
