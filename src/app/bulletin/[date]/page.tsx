@@ -158,26 +158,40 @@ export default function BulletinDetailPage() {
       return;
     }
 
-    // Cüzdan bağlıysa abonelik kontrolü yap
+    // Cüzdan adresini al ve bülteni yükle
     async function checkSubscription() {
-      if (typeof window === "undefined") return;
-      const provider = (window as any).ethereum;
-      if (!provider) { loadBulletin(); return; }
-      try {
-        const accounts = await provider.request({ method: "eth_accounts" });
-        if (!accounts?.[0]) { loadBulletin(); return; }
-        const wallet = accounts[0].toLowerCase();
-        const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
-        const data = await res.json();
-        if (data.active && data.apiKey) {
-          setApiKey(data.apiKey);
-          loadBulletinWithKey(data.apiKey);
-        } else {
-          loadBulletin();
-        }
-      } catch {
-        loadBulletin();
+      if (typeof window === "undefined") { loadBulletin(); return; }
+
+      // Tüm provider'ları dene
+      const providers = [
+        (window as any).ethereum,
+        (window as any).coinbaseWalletExtension,
+        (window as any).coinbaseWallet,
+      ].filter(Boolean);
+
+      for (const provider of providers) {
+        try {
+          const accounts = await provider.request({ method: "eth_accounts" });
+          if (accounts?.[0]) {
+            const wallet = accounts[0].toLowerCase();
+            // Abonelik kontrolü
+            const res = await fetch(`/api/subscribe/status?wallet=${wallet}`).catch(() => null);
+            if (res?.ok) {
+              const data = await res.json();
+              if (data.active && data.apiKey) {
+                setApiKey(data.apiKey);
+                loadBulletinWithKey(data.apiKey);
+                return;
+              }
+            }
+            // Günlük ödeme cache kontrolü (Redis'te)
+            loadBulletin(wallet);
+            return;
+          }
+        } catch {}
       }
+
+      loadBulletin();
     }
     checkSubscription();
   }, [date, locale]);
