@@ -74,6 +74,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
       const accounts = await provider.request({ method: "eth_requestAccounts" });
       if (accounts?.[0]) {
         setEvmAddress(accounts[0]);
+        localStorage.setItem("connectedWallet", accounts[0].toLowerCase());
         // Cüzdan bağlandıktan sonra abonelik kontrolü yap
         if (!isSubscribe) {
           const res = await fetch(`/api/subscribe/status?wallet=${accounts[0].toLowerCase()}`);
