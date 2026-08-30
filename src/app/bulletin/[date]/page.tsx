@@ -1,4 +1,6 @@
 "use client";
+// @ts-ignore
+import sdk from "@farcaster/miniapp-sdk";
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
@@ -93,6 +95,17 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
 }
 
 export default function BulletinDetailPage() {
+  useEffect(() => {
+    sdk.actions.ready().catch(() => {});
+    const t = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) { setPaymentRequired(true); return false; }
+        return prev;
+      });
+    }, 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   const { locale, t } = useLanguage();
   const params = useParams();
   const date = params.date as string;
