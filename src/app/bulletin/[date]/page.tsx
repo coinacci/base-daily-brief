@@ -111,6 +111,19 @@ export default function BulletinDetailPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  async function checkAndLoadWithSubscription(walletAddr: string) {
+    try {
+      const res = await fetch(`/api/subscribe/status?wallet=${walletAddr.toLowerCase()}`);
+      const data = await res.json();
+      if (data.active && data.apiKey) {
+        setApiKey(data.apiKey);
+        loadBulletinWithKey(data.apiKey);
+        return true;
+      }
+    } catch {}
+    return false;
+  }
+
   function loadBulletinWithKey(key: string) {
     setLoading(true); setNotFound(false); setPaymentRequired(false);
     fetch(`/api/bulletins/${date}?locale=${locale}`, {

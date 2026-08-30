@@ -72,7 +72,18 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
         return;
       }
       const accounts = await provider.request({ method: "eth_requestAccounts" });
-      if (accounts?.[0]) setEvmAddress(accounts[0]);
+      if (accounts?.[0]) {
+        setEvmAddress(accounts[0]);
+        // Cüzdan bağlandıktan sonra abonelik kontrolü yap
+        if (!isSubscribe) {
+          const res = await fetch(`/api/subscribe/status?wallet=${accounts[0].toLowerCase()}`);
+          const data = await res.json();
+          if (data.active && data.apiKey) {
+            onSuccess({ apiKey: data.apiKey, _subscriptionRedirect: true });
+            return;
+          }
+        }
+      }
     } catch {
       setError(locale === "tr" ? "Cüzdan bağlantısı reddedildi" : "Wallet connection rejected");
     }
