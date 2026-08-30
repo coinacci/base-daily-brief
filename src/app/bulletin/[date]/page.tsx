@@ -97,13 +97,6 @@ function RenderItem({ item, last = false }: { item: Item; last?: boolean }) {
 export default function BulletinDetailPage() {
   useEffect(() => {
     sdk.actions.ready().catch(() => {});
-    const t = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) { setPaymentRequired(true); return false; }
-        return prev;
-      });
-    }, 5000);
-    return () => clearTimeout(t);
   }, []);
 
   const { locale, t } = useLanguage();
@@ -167,26 +160,50 @@ export default function BulletinDetailPage() {
       return;
     }
 
-    // Cüzdan bağlıysa abonelik kontrolü yap
+    // Abonelik kontrolü — önce Farcaster, sonra normal EVM
     async function checkSubscription() {
-      if (typeof window === "undefined") return;
-      const provider = (window as any).ethereum;
-      if (!provider) { loadBulletin(); return; }
-      try {
-        const accounts = await provider.request({ method: "eth_accounts" });
-        if (!accounts?.[0]) { loadBulletin(); return; }
-        const wallet = accounts[0].toLowerCase();
-        const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
-        const data = await res.json();
-        if (data.active && data.apiKey) {
-          setApiKey(data.apiKey);
-          loadBulletinWithKey(data.apiKey);
-        } else {
-          loadBulletin();
-        }
-      } catch {
-        loadBulletin();
+      if (typeof window === "undefined") { loadBulletin(); return; }
+
+      async function checkWallet(walletAddr: string) {
+        try {
+          const res = await fetch(`/api/subscribe/status?wallet=${walletAddr.toLowerCase()}`);
+          const data = await res.json();
+          if (data.active && data.apiKey) {
+            setApiKey(data.apiKey);
+            loadBulletinWithKey(data.apiKey);
+            return true;
+          }
+        } catch {}
+        return false;
       }
+
+      // 1. Farcaster wallet
+      try {
+        const accounts = await sdk.wallet.ethProvider.request({ method: "eth_accounts" });
+        if (accounts?.[0]) {
+          const found = await checkWallet(accounts[0]);
+          if (found) return;
+          loadBulletin(accounts[0].toLowerCase());
+          return;
+        }
+      } catch {}
+
+      // 2. Normal EVM wallet
+      try {
+        const provider = (window as any).ethereum;
+        if (provider) {
+          const accounts = await provider.request({ method: "eth_accounts" });
+          if (accounts?.[0]) {
+            const found = await checkWallet(accounts[0]);
+            if (found) return;
+            loadBulletin(accounts[0].toLowerCase());
+            return;
+          }
+        }
+      } catch {}
+
+      // 3. Hiçbiri yoksa direkt yükle
+      loadBulletin();
     }
     checkSubscription();
   }, [date, locale]);
