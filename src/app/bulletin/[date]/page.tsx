@@ -169,20 +169,31 @@ export default function BulletinDetailPage() {
 
     // Cüzdan bağlıysa abonelik kontrolü yap
     async function checkSubscription() {
-      if (typeof window === "undefined") return;
-      const provider = (window as any).ethereum;
+      if (typeof window === "undefined") { loadBulletin(); return; }
+
+      // Tüm olası provider'ları dene
+      const provider = (window as any).ethereum || (window as any).coinbaseWalletExtension;
       if (!provider) { loadBulletin(); return; }
+
       try {
+        // eth_accounts ile sessizce sorgula (popup açmaz)
         const accounts = await provider.request({ method: "eth_accounts" });
         if (!accounts?.[0]) { loadBulletin(); return; }
+
         const wallet = accounts[0].toLowerCase();
         const res = await fetch(`/api/subscribe/status?wallet=${wallet}`);
         const data = await res.json();
+
         if (data.active && data.apiKey) {
+          // Aktif abonelik var — direkt içerik yükle
           setApiKey(data.apiKey);
           loadBulletinWithKey(data.apiKey);
+        } else if (data.active === false && data.expired) {
+          // Abonelik süresi dolmuş — ödeme ekranı göster
+          loadBulletin(wallet);
         } else {
-          loadBulletin();
+          // Günlük ödeme kontrolü
+          loadBulletin(wallet);
         }
       } catch {
         loadBulletin();
