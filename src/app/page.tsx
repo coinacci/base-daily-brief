@@ -138,7 +138,7 @@ export default function HomePage() {
                   Machine-readable API via x402
                 </div>
                 <div style={{ fontFamily: "Georgia, serif", fontSize: "13px", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "12px" }}>
-                  Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required.
+                  Base Daily Brief exposes a machine-readable API over the x402 protocol. Agents can autonomously pay and fetch bulletin content with just a private key — no browser or UI required. Also discoverable via llms.txt and agent-card.json.
                 </div>
                 <div style={{ background: "var(--surface-0)", border: "0.5px solid var(--border-strong)", padding: "12px", marginBottom: "10px", overflowX: "auto" }}>
                   <pre style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-primary)", margin: 0, lineHeight: 1.7 }}>{`# Endpoint
@@ -157,6 +157,10 @@ const signer = privateKeyToAccount(process.env.PRIVATE_KEY);
 const client = new x402Client();
 registerExactEvmScheme(client, { signer });
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
+
+// OR via Base MCP:
+// "Call this x402 endpoint and pay up to 0.01 USDC:
+//  https://basedailybrief.vercel.app/api/bulletins/{date}?locale=en"
 
 const res = await fetchWithPay(
   "https://basedailybrief.vercel.app/api/bulletins/2026-08-13?locale=en"
