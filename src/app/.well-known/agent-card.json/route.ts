@@ -5,65 +5,37 @@ export const dynamic = "force-static";
 export function GET() {
   return NextResponse.json({
     name: "Base Daily Brief",
-    description: "Daily curated bulletin from the Base ecosystem. Pay $0.01 USDC per call or $0.25 USDC for 30-day subscription via x402 (Base Mainnet).",
+    description: "Daily curated bulletin from the Base ecosystem, gated by x402 on Base Mainnet. $0.01 USDC per bulletin, $0.25 USDC for 30-day subscription.",
     url: "https://basedailybrief.vercel.app",
     version: "1.0.0",
-    capabilities: ["x402", "subscription"],
-    x402: {
-      enabled: true,
-      facilitator: "https://x402.org/facilitator",
+    publisher: "coinacci",
+    llms_txt: "https://basedailybrief.vercel.app/llms.txt",
+    openapi: "https://basedailybrief.vercel.app/openapi.json",
+    mcp: "https://basedailybrief.vercel.app/mcp",
+    payment: {
+      protocol: "x402",
       network: "eip155:8453",
       asset: "USDC",
-      builderCode: "bc_2iax4m4l"
+      payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+      builderCode: "bc_2iax4m4l",
+      prices: { bulletin: "$0.01", subscription_30d: "$0.25" }
     },
-    agenticWallets: {
-      compatible: true,
-      skills: ["search-for-service", "pay-for-service"],
-      installCommand: "npx skills add coinbase/agentic-wallet-skills",
-      examplePrompts: [
-        "Find APIs for Base ecosystem news",
-        "Get today's Base Daily Brief",
-        "Pay for the latest Base bulletin"
-      ]
-    },
-    endpoints: [
-      {
-        path: "/api/bulletins/{date}",
+    endpoints: {
+      bulletin: {
+        url: "https://basedailybrief.vercel.app/api/bulletins/{date}",
         method: "GET",
-        description: "Get full bulletin content for a given date. Pay $0.01 USDC via x402 or use X-API-Key from subscription.",
-        payment: {
-          scheme: "exact",
-          network: "eip155:8453",
-          asset: "USDC",
-          amount: "$0.01",
-          payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
-        },
-        subscription: {
-          header: "X-API-Key",
-          description: "Use API key from /api/subscribe to bypass per-call payment"
-        },
-        parameters: [
-          { name: "date", in: "path", required: true, example: "2026-08-17" },
-          { name: "locale", in: "query", required: false, enum: ["en", "tr"], default: "en" }
-        ]
+        payment: "$0.01 USDC via x402",
+        example_base_mcp: "Call this x402 endpoint and pay up to 0.01 USDC: https://basedailybrief.vercel.app/api/bulletins/2026-09-01?locale=en"
       },
-      {
-        path: "/api/subscribe",
-        method: "POST",
-        description: "Pay $0.25 USDC once, get an API key valid for 30 days. Rate limited to 5 calls/day.",
-        payment: {
-          scheme: "exact",
-          network: "eip155:8453",
-          asset: "USDC",
-          amount: "$0.25",
-          payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
-        }
-      }
-    ],
-    tags: ["base", "bulletin", "news", "ecosystem", "x402", "agent-native", "subscription", "agentic-wallets"],
-    builderCode: "bc_2iax4m4l",
-    contact: {
-      x: "https://x.com/coinacci"
-    }
+      list: { url: "https://basedailybrief.vercel.app/api/bulletins", method: "GET", payment: "free" },
+      subscribe: { url: "https://basedailybrief.vercel.app/api/subscribe", method: "POST", payment: "$0.25 USDC via x402" },
+      stocks: { url: "https://basedailybrief.vercel.app/api/stocks", method: "GET", payment: "$0.01 USDC via x402" },
+      mcp: { url: "https://basedailybrief.vercel.app/mcp", protocol: "MCP", tools: ["list_bulletins", "get_latest_bulletin", "get_bulletin", "subscribe"] }
+    },
+    skills: { awal: ["pay-for-service", "subscribe"], base_mcp: ["x402-payment"] },
+    tags: ["news", "base", "crypto", "agents", "x402", "defi", "tokenized-stocks"],
+    updated_daily: true,
+    publish_time: "14:00-15:00 Turkey time",
+    not_financial_advice: true
   });
 }
