@@ -1,0 +1,57 @@
+{
+  "name": "Base Daily Brief",
+  "description": "Daily curated bulletin from the Base ecosystem, gated by x402 on Base Mainnet. $0.01 USDC per bulletin, $0.25 USDC for 30-day subscription.",
+  "url": "https://basedailybrief.vercel.app",
+  "version": "1.0.0",
+  "publisher": "coinacci",
+  "llms_txt": "https://basedailybrief.vercel.app/llms.txt",
+  "openapi": "https://basedailybrief.vercel.app/openapi.json",
+  "mcp": "https://basedailybrief.vercel.app/mcp",
+  "payment": {
+    "protocol": "x402",
+    "network": "eip155:8453",
+    "asset": "USDC",
+    "payTo": "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+    "builderCode": "bc_2iax4m4l",
+    "prices": {
+      "bulletin": "$0.01",
+      "subscription_30d": "$0.25"
+    }
+  },
+  "endpoints": {
+    "bulletin": {
+      "url": "https://basedailybrief.vercel.app/api/bulletins/{date}",
+      "method": "GET",
+      "payment": "$0.01 USDC via x402",
+      "example_base_mcp": "Call this x402 endpoint and pay up to 0.01 USDC: https://basedailybrief.vercel.app/api/bulletins/2026-09-01?locale=en"
+    },
+    "list": {
+      "url": "https://basedailybrief.vercel.app/api/bulletins",
+      "method": "GET",
+      "payment": "free"
+    },
+    "subscribe": {
+      "url": "https://basedailybrief.vercel.app/api/subscribe",
+      "method": "POST",
+      "payment": "$0.25 USDC via x402"
+    },
+    "stocks": {
+      "url": "https://basedailybrief.vercel.app/api/stocks",
+      "method": "GET",
+      "payment": "$0.01 USDC via x402"
+    },
+    "mcp": {
+      "url": "https://basedailybrief.vercel.app/mcp",
+      "protocol": "MCP",
+      "tools": ["list_bulletins", "get_latest_bulletin", "get_bulletin", "subscribe"]
+    }
+  },
+  "skills": {
+    "awal": ["pay-for-service", "subscribe"],
+    "base_mcp": ["x402-payment"]
+  },
+  "tags": ["news", "base", "crypto", "agents", "x402", "defi", "tokenized-stocks"],
+  "updated_daily": true,
+  "publish_time": "14:00-15:00 Turkey time",
+  "not_financial_advice": true
+}

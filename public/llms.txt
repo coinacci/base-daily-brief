@@ -1,0 +1,54 @@
+# Base Daily Brief
+
+Base Daily Brief is a daily curated bulletin from the Base ecosystem, gated by the x402 payment protocol on Base Mainnet.
+
+## API Endpoints
+
+### Get Bulletin
+GET https://basedailybrief.vercel.app/api/bulletins/{date}?locale=en
+- Payment: $0.01 USDC via x402 on Base Mainnet
+- Returns: JSON bulletin with title, summary, and full content
+- Dates: YYYY-MM-DD format (e.g. 2026-09-01)
+- Locale: en (English) or tr (Turkish)
+
+### List Bulletins
+GET https://basedailybrief.vercel.app/api/bulletins
+- Payment: Free
+- Returns: List of available bulletins with dates and summaries
+
+### Subscribe (30 days)
+POST https://basedailybrief.vercel.app/api/subscribe
+- Payment: $0.25 USDC via x402 on Base Mainnet
+- Returns: API key valid for 30 days
+- Usage: Add X-API-Key header to bulletin requests
+
+### Tokenized Stocks Data
+GET https://basedailybrief.vercel.app/api/stocks
+- Payment: $0.01 USDC via x402 on Base Mainnet
+- Returns: Live onchain data for NVDAc, METAc, AAPLc, GOOGLc
+
+### MCP Server
+URL: https://basedailybrief.vercel.app/mcp
+- Tools: list_bulletins, get_latest_bulletin, get_bulletin, subscribe
+- Compatible with Claude and any MCP-enabled agent
+
+## Payment Details
+- Protocol: x402
+- Network: Base Mainnet (eip155:8453)
+- Asset: USDC
+- payTo: 0x33661B8496075c3b8b2B69CB3E03BC3436808d78
+- Builder Code: bc_2iax4m4l (ERC-8021)
+
+## Example Usage (Base MCP)
+"Call this x402 endpoint and pay up to 0.01 USDC: https://basedailybrief.vercel.app/api/bulletins/2026-09-01?locale=en"
+
+## Agent Card
+https://basedailybrief.vercel.app/.well-known/agent-card.json
+
+## OpenAPI
+https://basedailybrief.vercel.app/openapi.json
+
+## About
+- Publisher: coinacci
+- Updated: Daily (14:00-15:00 Turkey time)
+- Not financial advice
