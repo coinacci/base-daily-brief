@@ -93,6 +93,49 @@ export default function StocksPage() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: "24px" }}>
+          {/* Mobil: seçilen token detay + chart önce */}
+          {isMobile && selected && (
+            <div style={{ marginBottom: "8px" }}>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+                {selected.symbol} · {selected.name}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "12px" }}>
+                <div style={{ border: "1px solid var(--border)", padding: "10px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Price</div>
+                  <div style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>
+                    {selected.priceUsd > 0 ? "$" + selected.priceUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : "—"}
+                  </div>
+                </div>
+                <div style={{ border: "1px solid var(--border)", padding: "10px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>24h</div>
+                  <div style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: selected.priceChange24h >= 0 ? "#4ade80" : "#f87171" }}>
+                    {selected.priceChange24h !== 0 ? (selected.priceChange24h >= 0 ? "+" : "") + selected.priceChange24h.toFixed(2) + "%" : "—"}
+                  </div>
+                </div>
+                <div style={{ border: "1px solid var(--border)", padding: "10px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Volume</div>
+                  <div style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>
+                    {selected.volume24h > 0 ? fmt(selected.volume24h) : "—"}
+                  </div>
+                </div>
+              </div>
+              {selected.pairAddress && (
+                <div style={{ border: "1px solid var(--border)", overflow: "hidden", marginBottom: "8px" }}>
+                  <iframe
+                    src={"https://dexscreener.com/base/" + selected.pairAddress + "?embed=1&theme=dark&trades=0&info=0"}
+                    style={{ width: "100%", height: "300px", border: "none" }}
+                    title={selected.symbol + " chart"}
+                  />
+                </div>
+              )}
+              {selected.pairAddress && (
+                <a href={"https://dexscreener.com/base/" + selected.pairAddress} target="_blank" rel="noopener noreferrer"
+                  style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "16px", textDecoration: "none" }}>
+                  Open on DexScreener →
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Sol: Token listesi */}
           <div>
