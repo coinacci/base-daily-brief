@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/lib/LanguageContext";
 
 const TOKENS = [
@@ -85,7 +86,8 @@ export default function StocksPage() {
         {/* Header */}
         <div style={{ borderTop: "3px solid var(--text-primary)", borderBottom: "1px solid var(--border-strong)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", marginBottom: "16px" }}>
           <Link href="/" style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)", textDecoration: "none", letterSpacing: "0.08em" }}>← {locale === "tr" ? "Ana Sayfa" : "Home"}</Link>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 900, color: "var(--text-primary)" }}>Base Daily Brief</span>
+<span style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 900, color: "var(--text-primary)" }}>Base Daily Brief</span>
+          <LanguageSwitcher />
         </div>
 
         <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "20px" }}>
@@ -176,8 +178,8 @@ export default function StocksPage() {
             </div>
           </div>
 
-          {/* Sağ: Seçilen token detay + chart */}
-          {selected && (
+          {/* Sağ: Seçilen token detay + chart — sadece desktop */}
+          {!isMobile && selected && (
             <div>
               <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
                 {selected.symbol} · {selected.name}
