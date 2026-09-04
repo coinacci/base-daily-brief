@@ -175,7 +175,7 @@ export default function StocksPage() {
               )}
 
               {selected.pairAddress && (
-                
+<a
                   href={"https://dexscreener.com/base/" + selected.pairAddress}
                   target="_blank"
                   rel="noopener noreferrer"
