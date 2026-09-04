@@ -19,6 +19,12 @@ const TOKENS = [
   { symbol: "VVV", name: "VVV", address: "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf" },
   { symbol: "VIRTUAL", name: "Virtuals", address: "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b" },
   { symbol: "O", name: "o1 Exchange", address: "0x182FA643E5f29d5EcA75e7b9CF9336A3fe4620b2" },
+  { symbol: "AMZNc", name: "Amazon", address: "0xb200000000000000000000d9192b6B456483C2E8" },
+  { symbol: "MSFTc", name: "Microsoft", address: "0xB200000000000000000000Ab99cFa739E253872B" },
+  { symbol: "MSTRc", name: "MicroStrategy", address: "0xb2000000000000000000004884b426556b92883d" },
+  { symbol: "SNDKc", name: "SoundHound", address: "0xb200000000000000000000397293Cb8cda9a10c5" },
+  { symbol: "SPCXc", name: "SpaceX", address: "0xb2000000000000000000007b9fcbd005511aCBd5" },
+  { symbol: "TSLAc", name: "Tesla", address: "0xb2000000000000000000001e800a7f5189430cD0" },
 ];
 
 export function StocksTicker() {
