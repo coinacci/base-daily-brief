@@ -38,7 +38,11 @@ export function StocksTicker() {
             const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token.address}`);
             const data = await res.json();
             const pairs = (data.pairs || []).filter((p: any) => p.chainId === "base");
-            const best = pairs.sort((a: any, b: any) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+            const usdcPairs = pairs.filter((p: any) =>
+              p.quoteToken?.symbol === "USDC" && p.pairAddress?.length <= 42
+            );
+            const validPairs = usdcPairs.length > 0 ? usdcPairs : pairs.filter((p: any) => p.pairAddress?.length <= 42);
+            const best = (validPairs.length > 0 ? validPairs : pairs).sort((a: any, b: any) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
             if (!best) return null;
             return {
               symbol: token.symbol,

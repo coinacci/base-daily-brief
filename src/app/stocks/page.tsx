@@ -53,7 +53,12 @@ export default function StocksPage() {
             const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token.address}`);
             const data = await res.json();
             const pairs = (data.pairs || []).filter((p: any) => p.chainId === "base");
-            const best = pairs.sort((a: any, b: any) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+            // USDC pair'ini tercih et, adres 42 karakter olmalı (v4 pool'ları hariç)
+            const usdcPairs = pairs.filter((p: any) => 
+              p.quoteToken?.symbol === "USDC" && p.pairAddress?.length <= 42
+            );
+            const validPairs = usdcPairs.length > 0 ? usdcPairs : pairs.filter((p: any) => p.pairAddress?.length <= 42);
+            const best = (validPairs.length > 0 ? validPairs : pairs).sort((a: any, b: any) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
             if (!best) return { ...token, priceUsd: 0, priceChange24h: 0, volume24h: 0, liquidity: 0, pairAddress: "", loading: false };
             return {
               ...token,
