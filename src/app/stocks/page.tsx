@@ -167,7 +167,7 @@ export default function StocksPage() {
                     Chart · DexScreener
                   </div>
                   <iframe
-                    src={`https://dexscreener.com/base/${selected.pairAddress}?embed=1&theme=dark&trades=0&info=0`}
+                    src={"https://dexscreener.com/base/" + selected.pairAddress + "?embed=1&theme=dark&trades=0&info=0"}
                     style={{ width: "100%", height: "400px", border: "none" }}
                     title={`${selected.symbol} chart`}
                   />
@@ -176,7 +176,7 @@ export default function StocksPage() {
 
               {selected.pairAddress && (
                 
-                  href={`https://dexscreener.com/base/${selected.pairAddress}`}
+                  href={"https://dexscreener.com/base/" + selected.pairAddress}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginTop: "8px", textDecoration: "none" }}
