@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Asset = {
   symbol: string;
@@ -23,6 +24,7 @@ const TOKENS = [
 ];
 
 export function StocksTicker() {
+  const router = useRouter();
   const [assets, setAssets] = useState<Asset[]>([]);
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
@@ -73,12 +75,13 @@ export function StocksTicker() {
   const items = [...assets, ...assets];
 
   return (
-    <div style={{
+    <div onClick={() => router.push("/stocks")} style={{
       background: "#1a1408",
       borderTop: "1px solid #c8bfa8",
       borderBottom: "1px solid #c8bfa8",
       overflow: "hidden",
       padding: "5px 0",
+      cursor: "pointer",
     }}>
       <div ref={trackRef} style={{ display: "inline-flex", whiteSpace: "nowrap" }}>
         {items.map((asset, i) => (
