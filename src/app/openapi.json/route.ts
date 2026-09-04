@@ -8,76 +8,97 @@ export function GET() {
     info: {
       title: "Base Daily Brief API",
       version: "1.0.0",
-      description: "Daily curated bulletin from the Base ecosystem, gated by x402 on Base Mainnet.",
-      contact: { name: "coinacci", url: "https://basedailybrief.vercel.app" }
+    contact: { email: "yysoncul@gmail.com" },
+      description: "Daily curated bulletin from the Base ecosystem. Pay per call ($0.01 USDC) or subscribe for 30 days ($0.25 USDC) via x402 protocol on Base Mainnet.",
     },
-    servers: [{ url: "https://basedailybrief.vercel.app" }],
-    "x-x402": {
-      network: "eip155:8453",
-      asset: "USDC",
-      payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
-      builderCode: "bc_2iax4m4l"
-    },
+    servers: [
+      { url: "https://basedailybrief.vercel.app", description: "Production" }
+    ],
     paths: {
       "/api/bulletins/{date}": {
         get: {
           summary: "Get bulletin by date",
-          description: "Returns full bulletin content. Requires $0.01 USDC via x402 on Base Mainnet. Example Base MCP prompt: 'Call this x402 endpoint and pay up to 0.01 USDC: https://basedailybrief.vercel.app/api/bulletins/2026-09-01?locale=en'",
+          description: "Returns full bulletin content. Requires either x402 payment ($0.01 USDC) per call, or a valid X-API-Key header from a subscription.",
+          operationId: "getBulletin",
           parameters: [
-            { name: "date", in: "path", required: true, schema: { type: "string", example: "2026-09-01" } },
-            { name: "locale", in: "query", schema: { type: "string", enum: ["en", "tr"], default: "en" } },
-            { name: "X-API-Key", in: "header", required: false, schema: { type: "string" } }
+            { name: "date", in: "path", required: true, description: "Bulletin date in YYYY-MM-DD format", schema: { type: "string", example: "2026-08-13" } },
+            { name: "locale", in: "query", required: false, description: "Language: 'en' or 'tr'. Default: 'en'", schema: { type: "string", enum: ["en", "tr"], default: "en" } },
+            { name: "X-API-Key", in: "header", required: false, description: "Subscription API key. Bypasses per-call x402.", schema: { type: "string" } }
           ],
-          "x-x402": { price: "$0.01", scheme: "exact" },
           responses: {
-            "200": { description: "Bulletin content" },
-            "402": { description: "Payment required via x402" },
-            "404": { description: "Bulletin not found" }
+            "200": { description: "Bulletin content", content: { "application/json": { schema: { type: "object", properties: { date: { type: "string" }, title: { type: "string" }, summary: { type: "string" }, content: { type: "string" }, locale: { type: "string" } } } } } },
+            "402": { description: "Payment required via x402 protocol." },
+            "429": { description: "Daily rate limit exceeded." }
+          },
+          "x-x402": {
+            scheme: "exact",
+            network: "eip155:8453",
+            asset: "USDC",
+            amount: "$0.01",
+            payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+            facilitator: "https://x402.org/facilitator",
+            builderCode: "bc_2iax4m4l"
           }
         }
       },
-      "/api/bulletins": {
+      "/openapi.json": {
         get: {
-          summary: "List all bulletins",
-          description: "Returns list of available bulletins. Free — no payment required.",
-          parameters: [{ name: "locale", in: "query", schema: { type: "string", enum: ["en", "tr"], default: "en" } }],
-          responses: { "200": { description: "List of bulletins" } }
+          summary: "OpenAPI specification",
+          description: "Returns the OpenAPI specification for this API. Free — no payment required.",
+          operationId: "getOpenAPI",
+          security: [],
+          responses: {
+            "200": { description: "OpenAPI specification" }
+          }
+        }
+      },
+      "/.well-known/agent-card.json": {
+        get: {
+          summary: "Agent card",
+          description: "ERC-8004 agent discovery document. Free — no payment required.",
+          operationId: "getAgentCard",
+          security: [],
+          responses: {
+            "200": { description: "Agent card JSON" }
+          }
         }
       },
       "/api/subscribe": {
         post: {
-          summary: "30-day subscription",
-          description: "Pay $0.25 USDC via x402 once and get an API key valid for 30 days.",
-          "x-x402": { price: "$0.25", scheme: "exact" },
+          summary: "Subscribe for 30-day access",
+          description: "Pay $0.25 USDC once via x402 and receive an API key valid for 30 days.",
+          operationId: "subscribe",
+          requestBody: {
+            required: false,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    callbackUrl: {
+                      type: "string",
+                      format: "uri",
+                      description: "Optional HTTPS webhook URL for daily bulletin delivery.",
+                      example: "https://your-agent.example.com/webhook/bulletin"
+                    }
+                  }
+                }
+              }
+            }
+          },
           responses: {
-            "200": { description: "API key and subscription details" },
-            "402": { description: "Payment required via x402" }
+            "200": { description: "Subscription created", content: { "application/json": { schema: { type: "object", properties: { apiKey: { type: "string" }, expiresAt: { type: "string" }, days: { type: "integer" }, dailyLimit: { type: "integer" } } } } } },
+            "402": { description: "Payment required. $0.25 USDC on Base Mainnet." }
+          },
+          "x-x402": {
+            scheme: "exact",
+            network: "eip155:8453",
+            asset: "USDC",
+            amount: "$0.25",
+            payTo: "0x33661B8496075c3b8b2B69CB3E03BC3436808d78",
+            facilitator: "https://x402.org/facilitator",
+            builderCode: "bc_2iax4m4l"
           }
-        }
-      },
-      "/api/stocks": {
-        get: {
-          summary: "Tokenized stocks onchain data",
-          description: "Live onchain data for Coinbase Tokenized Stocks — NVDAc, METAc, AAPLc, GOOGLc. Requires $0.01 USDC via x402.",
-          "x-x402": { price: "$0.01", scheme: "exact" },
-          responses: {
-            "200": { description: "Stocks data" },
-            "402": { description: "Payment required via x402" }
-          }
-        }
-      },
-      "/mcp": {
-        post: {
-          summary: "MCP Server",
-          description: "Model Context Protocol server. Tools: list_bulletins, get_latest_bulletin, get_bulletin, subscribe.",
-          responses: { "200": { description: "MCP response" } }
-        }
-      },
-      "/llms.txt": {
-        get: {
-          summary: "LLMs discovery file",
-          description: "Agent and LLM discovery document. Free — no payment required.",
-          responses: { "200": { description: "Plain text discovery file" } }
         }
       }
     }
