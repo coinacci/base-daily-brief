@@ -170,7 +170,7 @@ export default function StocksPage() {
                   <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>{token.name}</div>
                 </div>
                 <div style={{ fontFamily: "monospace", fontSize: "12px", color: "var(--text-primary)", textAlign: "center" }}>
-                  {token.loading ? "..." : token.priceUsd > 0 ? `$${token.priceUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 })}` : "—"}
+                  {token.loading ? "..." : token.priceUsd > 0 ? "$" + (token.priceUsd < 1 ? token.priceUsd.toFixed(6) : token.priceUsd < 1000 ? token.priceUsd.toFixed(2) : token.priceUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })) : "—"}
                 </div>
                 <div style={{ fontFamily: "monospace", fontSize: "11px", fontWeight: 700, color: token.priceChange24h >= 0 ? "#4ade80" : "#f87171", textAlign: "right" }}>
                   {token.loading ? "..." : token.priceChange24h !== 0 ? `${token.priceChange24h >= 0 ? "+" : ""}${token.priceChange24h.toFixed(2)}%` : "—"}
