@@ -10,8 +10,16 @@ export default function StatsPage() {
   const [sales, setSales] = useState<{date: string; count: number}[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState<{x: number; y: number; date: string; count: number} | null>(null);
   const [subscriptions, setSubscriptions] = useState(0);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     fetch("/api/admin/stats", { headers: { "x-admin-password": "public" } })
