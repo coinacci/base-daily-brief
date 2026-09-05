@@ -122,11 +122,11 @@ export default function StatsPage() {
                       x={tooltip.x > W - 120 ? tooltip.x - 110 : tooltip.x + 8}
                       y={tooltip.y - 32}
                       width="100" height="44"
-                      fill="var(--surface-2)" stroke="var(--border)" strokeWidth="1" rx="3"
+                      fill="#1a1408" stroke="#c8bfa8" strokeWidth="1" rx="3"
                     />
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 16} textAnchor="middle" fontSize="9" fill="var(--text-primary)" fontFamily="monospace">{tooltip.date}</text>
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 4} textAnchor="middle" fontSize="9" fill="var(--text-primary)" fontFamily="monospace">{tooltip.count} sales</text>
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y + 8} textAnchor="middle" fontSize="9" fill="var(--text-accent)" fontFamily="monospace">${(tooltip.count * 0.01).toFixed(2)} USDC</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 16} textAnchor="middle" fontSize="9" fill="#f5f0e8" fontFamily="monospace">{tooltip.date}</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 4} textAnchor="middle" fontSize="9" fill="#f5f0e8" fontFamily="monospace">{tooltip.count} sales</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y + 8} textAnchor="middle" fontSize="9" fill="#4ade80" fontFamily="monospace">${(tooltip.count * 0.01).toFixed(2)} USDC</text>
                   </g>
                 )}
                 {/* X axis labels */}
