@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllSales } from "@/lib/redis";
+import { redis } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -10,5 +11,7 @@ export async function GET(req: NextRequest) {
   }
   const sales = await getAllSales();
   const total = sales.reduce((sum, s) => sum + s.count, 0);
-  return NextResponse.json({ sales, total });
+  const subKeys = await redis.keys("sub:*");
+  const subscriptions = subKeys.length;
+  return NextResponse.json({ sales, total, subscriptions });
 }

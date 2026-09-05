@@ -10,6 +10,7 @@ export default function StatsPage() {
   const [sales, setSales] = useState<{date: string; count: number}[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [subscriptions, setSubscriptions] = useState(0);
 
   useEffect(() => {
     fetch("/api/admin/stats", { headers: { "x-admin-password": "public" } })
@@ -17,6 +18,7 @@ export default function StatsPage() {
       .then(data => {
         setSales(data.sales || []);
         setTotal(data.total || 0);
+        setSubscriptions(data.subscriptions || 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -63,7 +65,7 @@ export default function StatsPage() {
                 <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "8px" }}>
                   {locale === "tr" ? "Toplam Gelir" : "Total Revenue"}
                 </div>
-                <div style={{ fontFamily: "monospace", fontSize: "36px", fontWeight: 700, color: "var(--text-primary)" }}>${(total * 0.01).toFixed(2)}</div>
+                <div style={{ fontFamily: "monospace", fontSize: "36px", fontWeight: 700, color: "var(--text-primary)" }}>${((total * 0.01) + (subscriptions * 0.25)).toFixed(2)}</div>
                 <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>USDC</div>
               </div>
               <div style={{ border: "1px solid var(--border-strong)", padding: "20px" }}>
