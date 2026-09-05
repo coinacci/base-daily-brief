@@ -156,6 +156,7 @@ export default function StatsPage() {
                 ))}
               </div>
             </div>
+            </>}
 
             <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "16px", textAlign: "center" }}>
               {locale === "tr" ? "Veriler x402 · Base Mainnet · USDC" : "Data via x402 · Base Mainnet · USDC"}
