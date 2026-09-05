@@ -26,8 +26,9 @@ export default function StatsPage() {
 
   const maxCount = sales.length ? Math.max(...sales.map(s => s.count)) : 1;
   const W = 600; const H = 140; const pad = 32;
-  const points = sales.map((s, i) => ({
-    x: pad + (i / Math.max(sales.length - 1, 1)) * (W - pad * 2),
+  const sortedSales = [...sales].sort((a, b) => a.date.localeCompare(b.date));
+  const points = sortedSales.map((s, i) => ({
+    x: pad + (i / Math.max(sortedSales.length - 1, 1)) * (W - pad * 2),
     y: H - pad - ((s.count / maxCount) * (H - pad * 2)),
     ...s
   }));
