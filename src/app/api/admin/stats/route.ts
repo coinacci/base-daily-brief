@@ -15,9 +15,9 @@ export async function GET(req: NextRequest) {
   const subKeys = await redis.keys("sub:*");
   const subscriptions = subKeys.length;
 
-  // Bilinen onchain USDC revenue (Basescan doğrulaması)
-  const onchainRevenue = 3.77;
-  const onchainTxCount = 209;
+  // Redis'ten dinamik revenue hesapla
+  const onchainTxCount = total + subscriptions;
+  const onchainRevenue = parseFloat((total * 0.01 + subscriptions * 0.25).toFixed(2));
 
   return NextResponse.json({ sales, total, subscriptions, onchainRevenue, onchainTxCount });
 }
