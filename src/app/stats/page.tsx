@@ -122,11 +122,11 @@ export default function StatsPage() {
                       x={tooltip.x > W - 120 ? tooltip.x - 110 : tooltip.x + 8}
                       y={tooltip.y - 32}
                       width="100" height="44"
-                      fill="var(--text-primary)" rx="3"
+                      fill="#ffffff" stroke="#e8e0d0" strokeWidth="1" rx="3"
                     />
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 16} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">{tooltip.date}</text>
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 4} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">{tooltip.count} sales</text>
-                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y + 8} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">${(tooltip.count * 0.01).toFixed(2)} USDC</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 16} textAnchor="middle" fontSize="9" fill="#1a1408" fontFamily="monospace">{tooltip.date}</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 4} textAnchor="middle" fontSize="9" fill="#1a1408" fontFamily="monospace">{tooltip.count} sales</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y + 8} textAnchor="middle" fontSize="9" fill="#1a1408" fontFamily="monospace">${(tooltip.count * 0.01).toFixed(2)} USDC</text>
                   </g>
                 )}
                 {/* X axis labels */}
@@ -137,7 +137,7 @@ export default function StatsPage() {
             </div>
 
             {/* Tablo */}
-            <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
+{isMobile && <><div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "12px" }}>
               {locale === "tr" ? "Günlük Detay" : "Daily Detail"}
             </div>
             <div style={{ border: "1px solid var(--border)" }}>
