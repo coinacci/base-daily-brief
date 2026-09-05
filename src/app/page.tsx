@@ -39,7 +39,10 @@ export default function HomePage() {
 
         {/* Top bar */}
         <div style={{ borderTop: "3px solid var(--text-primary)", borderBottom: "1px solid var(--border-strong)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", marginBottom: "10px" }}>
-          {!isMobile && <span style={{ fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)" }}>Base Ecosystem · Agent-Native · x402 · <a href="/stats" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>{locale === "tr" ? "İstatistikler" : "Stats"}</a></span>}
+          <span style={{ fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)" }}>
+            {!isMobile && "Base Ecosystem · Agent-Native · x402 · "}
+            <a href="/stats" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>{locale === "tr" ? "İstatistikler" : "Stats"}</a>
+          </span>
           <LanguageSwitcher />
           <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)" }}>
             {new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}
