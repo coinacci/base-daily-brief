@@ -13,6 +13,7 @@ export default function AdminPage() {
   const [locale, setLocale] = useState<Locale>("tr");
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
   const [sales, setSales] = useState<{date: string; count: number}[]>([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
   const [loadingStats, setLoadingStats] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -26,6 +27,7 @@ export default function AdminPage() {
       const data = await res.json();
       setSales(data.sales);
       setTotalSales(data.total);
+      setTotalRevenue(data.total * 0.01);
     }
     setLoadingStats(false);
   }
@@ -66,11 +68,41 @@ export default function AdminPage() {
               {loadingStats ? "Loading..." : "Load Stats"}
             </button>
           </div>
-          {sales.length > 0 && (
+          {sales.length > 0 && (() => {
+            const maxCount = Math.max(...sales.map(s => s.count));
+            const W = 600; const H = 120; const pad = 30;
+            const points = sales.map((s, i) => {
+              const x = pad + (i / (sales.length - 1)) * (W - pad * 2);
+              const y = H - pad - ((s.count / maxCount) * (H - pad * 2));
+              return { x, y, ...s };
+            });
+            const polyline = points.map(p => p.x + "," + p.y).join(" ");
+            return (
             <>
-              <div style={{ fontFamily: "monospace", fontSize: "12px", color: "var(--text-accent)", marginBottom: "12px" }}>
-                Total: {totalSales} sales
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                <div style={{ border: "1px solid var(--border)", padding: "12px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total Sales</div>
+                  <div style={{ fontFamily: "monospace", fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>{totalSales}</div>
+                </div>
+                <div style={{ border: "1px solid var(--border)", padding: "12px" }}>
+                  <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total Revenue</div>
+                  <div style={{ fontFamily: "monospace", fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>${totalRevenue.toFixed(2)} USDC</div>
+                </div>
               </div>
+              <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)", marginBottom: "6px", letterSpacing: "0.1em", textTransform: "uppercase" }}>Daily Sales</div>
+              <svg viewBox={"0 0 " + W + " " + H} style={{ width: "100%", background: "var(--surface-0)", border: "1px solid var(--border)", marginBottom: "16px" }}>
+                <polyline points={polyline} fill="none" stroke="#0052FF" strokeWidth="2" />
+                {points.map((p, i) => (
+                  <g key={i}>
+                    <circle cx={p.x} cy={p.y} r="3" fill="#0052FF" />
+                    {p.count === maxCount && (
+                      <text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fill="#0052FF" fontFamily="monospace">{p.count}</text>
+                    )}
+                  </g>
+                ))}
+                <text x={points[0]?.x} y={H - 8} textAnchor="middle" fontSize="8" fill="#7a6f5a" fontFamily="monospace">{sales[0]?.date.slice(5)}</text>
+                <text x={points[points.length-1]?.x} y={H - 8} textAnchor="middle" fontSize="8" fill="#7a6f5a" fontFamily="monospace">{sales[sales.length-1]?.date.slice(5)}</text>
+              </svg>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
@@ -90,7 +122,8 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </>
-          )}
+            );
+          })()}
         </div>
 
         <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 900, color: "#1a1408", marginBottom: "24px" }}>Admin</h1>
