@@ -10,6 +10,7 @@ export default function StatsPage() {
   const [sales, setSales] = useState<{date: string; count: number}[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [tooltip, setTooltip] = useState<{x: number; y: number; date: string; count: number} | null>(null);
   const [subscriptions, setSubscriptions] = useState(0);
 
   useEffect(() => {
@@ -97,13 +98,29 @@ export default function StatsPage() {
                 <polyline points={polyline} fill="none" stroke="#0052FF" strokeWidth="2" strokeLinejoin="round" />
                 {/* Points */}
                 {points.map((p, i) => (
-                  <g key={i}>
-                    <circle cx={p.x} cy={p.y} r={p.count === maxCount ? 5 : 3} fill="#0052FF" stroke="var(--surface-0)" strokeWidth="1.5" />
-                    {p.count === maxCount && (
-                      <text x={p.x} y={p.y - 10} textAnchor="middle" fontSize="10" fill="#0052FF" fontFamily="monospace" fontWeight="700">{p.count}</text>
-                    )}
+                  <g key={i}
+                    onMouseEnter={() => setTooltip({ x: p.x, y: p.y, date: p.date, count: p.count })}
+                    onMouseLeave={() => setTooltip(null)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <circle cx={p.x} cy={p.y} r="12" fill="transparent" />
+                    <circle cx={p.x} cy={p.y} r={tooltip?.date === p.date ? 5 : 3} fill="#0052FF" stroke="var(--surface-0)" strokeWidth="1.5" />
                   </g>
                 ))}
+                {/* Tooltip */}
+                {tooltip && (
+                  <g>
+                    <rect
+                      x={tooltip.x > W - 120 ? tooltip.x - 110 : tooltip.x + 8}
+                      y={tooltip.y - 32}
+                      width="100" height="44"
+                      fill="var(--text-primary)" rx="3"
+                    />
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 16} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">{tooltip.date}</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y - 4} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">{tooltip.count} sales</text>
+                    <text x={tooltip.x > W - 120 ? tooltip.x - 60 : tooltip.x + 58} y={tooltip.y + 8} textAnchor="middle" fontSize="9" fill="var(--surface-2)" fontFamily="monospace">${(tooltip.count * 0.01).toFixed(2)} USDC</text>
+                  </g>
+                )}
                 {/* X axis labels */}
                 {points.filter((_, i) => i === 0 || i === Math.floor(points.length / 2) || i === points.length - 1).map((p, i) => (
                   <text key={i} x={p.x} y={H - 8} textAnchor="middle" fontSize="8" fill="#7a6f5a" fontFamily="monospace">{p.date.slice(5)}</text>
