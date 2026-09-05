@@ -138,13 +138,15 @@ export default function StatsPage() {
                 <span style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "center" }}>{locale === "tr" ? "Satış" : "Sales"}</span>
                 <span style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right" }}>Revenue</span>
               </div>
-              {[...sales].reverse().map((s, i) => (
-                <div key={s.date} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "8px 12px", borderBottom: i === sales.length - 1 ? "none" : "1px solid var(--border)", background: s.count === maxCount ? "rgba(0,82,255,0.04)" : "transparent" }}>
-                  <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-primary)" }}>{s.date}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: "11px", color: s.count === maxCount ? "#0052FF" : "var(--text-primary)", fontWeight: s.count === maxCount ? 700 : 400, textAlign: "center" }}>{s.count}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)", textAlign: "right" }}>${(s.count * 0.01).toFixed(2)}</span>
-                </div>
-              ))}
+              <div style={{ maxHeight: isMobile ? "200px" : "none", overflowY: isMobile ? "auto" : "visible" }}>
+                {[...sales].sort((a, b) => b.date.localeCompare(a.date)).map((s, i) => (
+                  <div key={s.date} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "8px 12px", borderBottom: i === sales.length - 1 ? "none" : "1px solid var(--border)", background: s.count === maxCount ? "rgba(0,82,255,0.04)" : "transparent" }}>
+                    <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-primary)" }}>{s.date}</span>
+                    <span style={{ fontFamily: "monospace", fontSize: "11px", color: s.count === maxCount ? "#0052FF" : "var(--text-primary)", fontWeight: s.count === maxCount ? 700 : 400, textAlign: "center" }}>{s.count}</span>
+                    <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)", textAlign: "right" }}>${(s.count * 0.01).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "16px", textAlign: "center" }}>
