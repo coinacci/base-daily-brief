@@ -82,7 +82,7 @@ export default function StatsPage() {
                 <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "8px" }}>
                   {locale === "tr" ? "Yayınlanan Bülten" : "Editions"}
                 </div>
-                <div style={{ fontFamily: "monospace", fontSize: "36px", fontWeight: 700, color: "var(--text-primary)" }}>{bulletinCount}</div>
+                <div style={{ fontFamily: "monospace", fontSize: "36px", fontWeight: 700, color: "var(--text-primary)" }}>{sales.length}</div>
               </div>
             </div>
 
