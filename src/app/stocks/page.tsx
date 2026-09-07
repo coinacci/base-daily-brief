@@ -241,6 +241,10 @@ export default function StocksPage() {
                   {locale === "tr" ? "DexScreener'da aç →" : "Open on DexScreener →"}
                 </a>
               )}
+              <a href="https://aerodrome.finance/" target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginTop: "8px", textDecoration: "none" }}>
+                Open on Aerodrome →
+              </a>
             </div>
           )}
         </div>
