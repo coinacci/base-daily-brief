@@ -42,6 +42,7 @@ export default function HomePage() {
           <span style={{ fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)" }}>
             {!isMobile && "Base Ecosystem · Agent-Native · x402 · "}
             <a href="/stats" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>{locale === "tr" ? "İstatistikler" : "Stats"}</a>
+            {" · "}<a href="/nfts" style={{ color: "#0000ff", textDecoration: "none" }}>NFTs</a>
           </span>
           <LanguageSwitcher />
           <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text-secondary)" }}>
