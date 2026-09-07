@@ -97,6 +97,7 @@ export default function NFTsPage() {
                   </div>
                 </div>
               ))}
+              </div>
               <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "12px" }}>
                 {locale === "tr" ? "Veriler OpenSea'dan. Finansal tavsiye değildir." : "Data from OpenSea. Not financial advice."}
               </div>
