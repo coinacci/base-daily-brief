@@ -78,7 +78,7 @@ export default function NFTsPage() {
               <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
                 {locale === "tr" ? "Top 20 Koleksiyon" : "Top 20 Collections"}
               </div>
-              <div style={{ maxHeight: "420px", overflowY: "auto" }}>
+              <div style={{ maxHeight: isMobile ? "none" : "420px", overflowY: isMobile ? "visible" : "auto" }}>
               {collections.map((col) => (
                 <div key={col.slug} onClick={() => setSelected(col)} style={{
                   padding: "12px", marginBottom: "4px", cursor: "pointer",
