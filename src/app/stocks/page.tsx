@@ -135,7 +135,7 @@ export default function StocksPage() {
                   />
                 </div>
               )}
-              {selected.pairAddress && (
+                {selected.pairAddress && (
                 <a href={"https://dexscreener.com/base/" + selected.pairAddress} target="_blank" rel="noopener noreferrer"
                   style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "8px", textDecoration: "none" }}>
                   Open on DexScreener →
@@ -145,6 +145,7 @@ export default function StocksPage() {
                 style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "16px", textDecoration: "none" }}>
                 Open on Aerodrome →
               </a>
+
             </div>
           )}
 
