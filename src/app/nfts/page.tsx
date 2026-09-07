@@ -25,7 +25,6 @@ export default function NFTsPage() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [selected, setSelected] = useState<Collection | null>(null);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -79,7 +78,8 @@ export default function NFTsPage() {
               <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
                 {locale === "tr" ? "Top 20 Koleksiyon" : "Top 20 Collections"}
               </div>
-              {(showAll ? collections : collections.slice(0, 5)).map((col) => (
+              <div style={{ maxHeight: "420px", overflowY: "auto" }}>
+              {collections.map((col) => (
                 <div key={col.slug} onClick={() => setSelected(col)} style={{
                   padding: "12px", marginBottom: "4px", cursor: "pointer",
                   border: selected?.slug === col.slug ? "1px solid var(--text-primary)" : "1px solid var(--border)",
@@ -97,14 +97,6 @@ export default function NFTsPage() {
                   </div>
                 </div>
               ))}
-              {collections.length > 5 && (
-                <div
-                  onClick={() => setShowAll(!showAll)}
-                  style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginTop: "8px", cursor: "pointer", textAlign: "center", padding: "8px", border: "1px solid var(--border)" }}
-                >
-                  {showAll ? (locale === "tr" ? "▲ Daha az göster" : "▲ Show less") : (locale === "tr" ? "▼ Tümünü göster (20)" : "▼ Show all (20)")}
-                </div>
-              )}
               <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "12px" }}>
                 {locale === "tr" ? "Veriler OpenSea'dan. Finansal tavsiye değildir." : "Data from OpenSea. Not financial advice."}
               </div>
