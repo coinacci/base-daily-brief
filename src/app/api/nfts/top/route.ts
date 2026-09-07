@@ -8,7 +8,7 @@ export async function GET() {
   try {
     // Top 5 koleksiyonu çek
     const colRes = await fetch(
-      "https://api.opensea.io/api/v2/collections?chain=base&order_by=one_day_volume&limit=5",
+      "https://api.opensea.io/api/v2/collections?chain=base&order_by=one_day_volume&limit=20",
       { headers: { "x-api-key": OPENSEA_KEY } }
     );
     const colData = await colRes.json();

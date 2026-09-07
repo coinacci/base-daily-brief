@@ -76,7 +76,7 @@ export default function NFTsPage() {
             {/* Sol: Koleksiyon listesi */}
             <div>
               <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
-                {locale === "tr" ? "Top 5 Koleksiyon" : "Top 5 Collections"}
+                {locale === "tr" ? "Top 20 Koleksiyon" : "Top 20 Collections"}
               </div>
               {collections.map((col) => (
                 <div key={col.slug} onClick={() => setSelected(col)} style={{
