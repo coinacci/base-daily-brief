@@ -25,6 +25,7 @@ export default function NFTsPage() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [selected, setSelected] = useState<Collection | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -78,7 +79,7 @@ export default function NFTsPage() {
               <div style={{ fontFamily: "monospace", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-accent)", borderBottom: "1px solid var(--border-accent)", paddingBottom: "4px", marginBottom: "10px" }}>
                 {locale === "tr" ? "Top 20 Koleksiyon" : "Top 20 Collections"}
               </div>
-              <div style={{ maxHeight: isMobile ? "none" : "420px", overflowY: isMobile ? "visible" : "auto" }}>
+              <div style={{ maxHeight: isMobile ? (mobileExpanded ? "none" : "420px") : "420px", overflowY: "auto" }}>
               {collections.map((col) => (
                 <div key={col.slug} onClick={() => setSelected(col)} style={{
                   padding: "12px", marginBottom: "4px", cursor: "pointer",
@@ -98,6 +99,11 @@ export default function NFTsPage() {
                 </div>
               ))}
               </div>
+              {isMobile && !mobileExpanded && collections.length > 5 && (
+                <div onClick={() => setMobileExpanded(true)} style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginTop: "8px", cursor: "pointer", textAlign: "center", padding: "8px", border: "1px solid var(--border)" }}>
+                  ▼ {locale === "tr" ? "Daha fazla göster" : "Show more"}
+                </div>
+              )}
               <div style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--text-muted)", marginTop: "12px" }}>
                 {locale === "tr" ? "Veriler OpenSea'dan. Finansal tavsiye değildir." : "Data from OpenSea. Not financial advice."}
               </div>
