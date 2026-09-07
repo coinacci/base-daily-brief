@@ -137,10 +137,14 @@ export default function StocksPage() {
               )}
               {selected.pairAddress && (
                 <a href={"https://dexscreener.com/base/" + selected.pairAddress} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "16px", textDecoration: "none" }}>
+                  style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "8px", textDecoration: "none" }}>
                   Open on DexScreener →
                 </a>
               )}
+              <a href="https://aerodrome.finance/" target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", textAlign: "center", fontFamily: "monospace", fontSize: "10px", color: "var(--text-accent)", marginBottom: "16px", textDecoration: "none" }}>
+                Open on Aerodrome →
+              </a>
             </div>
           )}
 
