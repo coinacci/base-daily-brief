@@ -48,7 +48,12 @@ export default function NFTsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const fmt = (n: number) => n >= 1 ? `${n.toFixed(3)} ETH` : `${(n * 1000).toFixed(2)}m ETH`;
+  const fmt = (n: number) => {
+    if (n === 0) return "—";
+    if (n >= 1) return n.toFixed(3) + " ETH";
+    if (n >= 0.001) return n.toFixed(4) + " ETH";
+    return n.toFixed(6) + " ETH";
+  };
 
   return (
     <main style={{ background: "var(--surface-2)", minHeight: "100vh", color: "var(--text-primary)" }}>
