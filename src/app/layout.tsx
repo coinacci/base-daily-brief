@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { FarcasterProvider } from "@/components/FarcasterProvider";
 import { WagmiProvider } from "@/components/WagmiProvider";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <FarcasterProvider />
           <LanguageProvider>{children}</LanguageProvider>
         </WagmiProvider>
+        <Analytics />
       </body>
     </html>
   );
