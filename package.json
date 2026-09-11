@@ -15,6 +15,7 @@
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@upstash/redis": "^1.38.2",
+    "@vercel/analytics": "^2.0.1",
     "@x402/core": "latest",
     "@x402/evm": "^2.22.0",
     "@x402/fetch": "^2.22.0",
