@@ -29,7 +29,7 @@ export async function GET() {
           const month = intervals.find((i: any) => i.interval === "thirty_day") || {};
 
           return {
-            name: col.name,
+            name: col.name || col.collection || "Unnamed",
             slug: col.collection,
             imageUrl: col.image_url || "",
             floorPrice: stats.total?.floor_price || 0,

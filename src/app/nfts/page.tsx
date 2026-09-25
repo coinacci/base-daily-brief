@@ -89,7 +89,7 @@ export default function NFTsPage() {
                 }}>
                   {col.imageUrl && <img src={col.imageUrl} alt={col.name} style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover" }} />}
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "monospace", fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>{col.name}</div>
+                    <div style={{ fontFamily: "monospace", fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>{col.name || col.slug || "Unnamed"}</div>
                     <div style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--text-muted)" }}>Floor: {fmt(col.floorPrice)}</div>
                   </div>
                   <div style={{ textAlign: "right" }}>
