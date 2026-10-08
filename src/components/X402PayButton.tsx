@@ -8,6 +8,8 @@ import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
 import { registerExactEvmScheme } from "@x402/evm/exact/client";
 import sdk from "@farcaster/miniapp-sdk";
 
+const BUILDER_CODE = "bc_2iax4m4l";
+
 interface Props {
   payTo: string;
   amount: string;
@@ -105,7 +107,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           }),
       };
 
-      const client = new x402Client();
+      const client = new x402Client({ builderCode: BUILDER_CODE });
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
@@ -147,7 +149,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           }),
       };
 
-      const client = new x402Client();
+      const client = new x402Client({ builderCode: BUILDER_CODE });
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
