@@ -107,7 +107,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           }),
       };
 
-      const client = new x402Client({ builderCode: BUILDER_CODE });
+      const client = new x402Client();
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
@@ -149,7 +149,7 @@ export function X402PayButton({ date, locale, onSuccess, isSubscribe = false }: 
           }),
       };
 
-      const client = new x402Client({ builderCode: BUILDER_CODE });
+      const client = new x402Client();
       registerExactEvmScheme(client, { signer });
       const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
